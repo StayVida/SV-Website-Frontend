@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { CalendarDays, MapPin, Users, Search, Hotel } from "lucide-react";
+import { CalendarDays, MapPin, Users, Hotel } from "lucide-react";
 
 const eventTypes = [
   "Wedding",
@@ -103,7 +103,6 @@ const EventBookingForm = () => {
         {/* Search Button */}
         <div className="md:col-span-1 flex items-end">
           <Button variant="booking" className="w-full h-10 md:h-12 text-sm md:text-base">
-            <Search className="w-4 h-4 mr-2" />
             Search
           </Button>
         </div>

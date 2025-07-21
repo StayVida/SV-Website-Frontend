@@ -9,6 +9,10 @@ import HowItWorkEvent from "@/features/homePage/HowItWorkEvent";
 import FeaturedProperties from "@/features/homePage/FeaturedProperties";
 import WhyChoose from "@/features/homePage/WhyChoose";
 import TestimonialForHotel from "@/features/homePage/TestimonialForHotel";
+import ExploreEvent from "@/features/homePage/ExploreEvent";
+import PopularVenues from "@/features/homePage/PopularVenues";
+import TestimonialForEvent from "@/features/homePage/TestimonialForEvent";
+import WhyChooseEvent from "@/features/homePage/WhyChooseEvent";
 
 function HomePage() {
   const [activeForm,setActiveForm] = useState("hotel")
@@ -82,6 +86,10 @@ function HomePage() {
     {activeForm == "hotel" && <FeaturedProperties />}
     {activeForm == "hotel" && <WhyChoose />}
     {activeForm == "hotel" && <TestimonialForHotel />}
+    {activeForm == "event" && <ExploreEvent />}
+    {activeForm == "event" && <PopularVenues />}
+    {activeForm == "event" && <TestimonialForEvent />}
+    {activeForm == "event" && <WhyChooseEvent />}
     </>
   )
 }
