@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import NavBar from "./NavBar";
+import Footer from "./Footer";
 
 /**
  * @param {{ children: React.ReactNode }} props
@@ -11,9 +12,7 @@ const MainLayout = () => {
       <main className="flex-1">
         <Outlet />
       </main>
-      <footer className="bg-muted text-muted-foreground p-4 text-center">
-        &copy; {new Date().getFullYear()} My App
-      </footer>
+      <Footer />
     </div>
   );
 };

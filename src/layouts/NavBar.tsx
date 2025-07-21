@@ -15,7 +15,7 @@ const NavBar = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
+    <header className="bg-white/95 backdrop-blur-md border-b border-gray-200">
       <nav className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -65,7 +65,7 @@ const NavBar = () => {
             <Button
               variant="default"
               size="sm"
-              className="bg-background border-1 border-primary"
+              className="bg-primary border-1 border-primary"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
@@ -93,6 +93,7 @@ const NavBar = () => {
                     }`
                   }
                   end={item.href === "/"}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <item.icon className="w-4 h-4 inline mr-2" />
                   {item.name}
