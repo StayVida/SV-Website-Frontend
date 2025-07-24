@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -5,96 +7,139 @@ import { Card } from "@/components/ui/card";
 import { CalendarDays, MapPin, Users, Baby} from "lucide-react";
 
 const BookingSearchForm = () => {
+  const [searchData, setSearchData] = useState({
+    destination: "",
+    checkIn: "",
+    checkOut: "",
+    adults: "2",
+    children: "0",
+  })
+
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Build path params
+    const destination = encodeURIComponent(searchData.destination || "Goa, India");
+    const checkIn = encodeURIComponent(searchData.checkIn || "15 Mar");
+    const checkOut = encodeURIComponent(searchData.checkOut || "18 Mar");
+    const adults = encodeURIComponent(searchData.adults);
+    const children = encodeURIComponent(searchData.children);
+    navigate(`/search/${destination}/${checkIn}/${checkOut}/${adults}/${children}`);
+  }
   return (
-    <Card className="bg-white/95 backdrop-blur-sm p-2 sm:p-4 md:p-6 rounded-xl shadow-hover">
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-2 md:gap-4">
-        {/* Destination */}
-        <div className="md:col-span-1">
-          <Label htmlFor="destination" className="text-sm md:text-base font-medium text-gray-700 mb-2 block">
-            Destination
-          </Label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-4 w-4 h-4 text-gray-400" />
-            <Input
-              id="destination"
-              placeholder="Where are you going?"
-              className="pl-10 h-10 md:h-12 text-sm md:text-base"
-            />
-          </div>
-        </div>
-
-        {/* Check In & Check Out (row on mobile) */}
-        <div className="flex flex-row gap-2 w-full md:contents">
-          <div className="flex-1 md:col-span-1">
-            <Label htmlFor="checkin" className="text-sm md:text-base font-medium text-gray-700 mb-2 block">
-              Check In
+    <form onSubmit={handleSearch}>
+      <Card className="bg-white/95 backdrop-blur-sm p-2 sm:p-4 md:p-6 rounded-xl shadow-hover">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-2 md:gap-4">
+          {/* Destination */}
+          <div className="md:col-span-1">
+            <Label htmlFor="destination" className="text-sm md:text-base font-medium text-gray-700 mb-2 block">
+              Destination
             </Label>
             <div className="relative">
-              <CalendarDays className="absolute left-2 top-3 md:top-4 w-4 h-4 text-gray-400" />
+              <MapPin className="absolute left-3 top-4 w-4 h-4 text-gray-400" />
               <Input
-                id="checkin"
-                type="date"
-                className="pl-7 h-10 md:h-12 text-sm md:text-base"
+                id="destination"
+                name="destination"
+                placeholder="Where are you going?"
+                className="pl-10 h-10 md:h-12 text-sm md:text-base"
+                value={searchData.destination}
+                onChange={e => setSearchData({ ...searchData, destination: e.target.value })}
+                required
               />
             </div>
           </div>
-          <div className="flex-1 md:col-span-1">
-            <Label htmlFor="checkout" className="text-sm md:text-base font-medium text-gray-700 mb-2 block">
-              Check Out
+
+          {/* Check In & Check Out (row on mobile) */}
+          <div className="flex flex-row gap-2 w-full md:contents">
+            <div className="flex-1 md:col-span-1">
+              <Label htmlFor="checkin" className="text-sm md:text-base font-medium text-gray-700 mb-2 block">
+                Check In
+              </Label>
+              <div className="relative">
+                <CalendarDays className="absolute left-2 top-3 md:top-4 w-4 h-4 text-gray-400" />
+                <Input
+                  id="checkin"
+                  name="checkIn"
+                  type="date"
+                  className="pl-7 h-10 md:h-12 text-sm md:text-base"
+                  value={searchData.checkIn}
+                  onChange={e => setSearchData({ ...searchData, checkIn: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+            <div className="flex-1 md:col-span-1">
+              <Label htmlFor="checkout" className="text-sm md:text-base font-medium text-gray-700 mb-2 block">
+                Check Out
+              </Label>
+              <div className="relative">
+                <CalendarDays className="absolute left-2 top-3 md:top-4 w-4 h-4 text-gray-400" />
+                <Input
+                  id="checkout"
+                  name="checkOut"
+                  type="date"
+                  className="pl-7 h-10 md:h-12 text-sm md:text-base"
+                  value={searchData.checkOut}
+                  onChange={e => setSearchData({ ...searchData, checkOut: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Persons */}
+          <div className="md:col-span-1">
+            <Label htmlFor="adults" className="text-sm font-medium text-gray-700 mb-2 block">
+              Persons
             </Label>
             <div className="relative">
-              <CalendarDays className="absolute left-2 top-3 md:top-4 w-4 h-4 text-gray-400" />
+              <Users className="absolute left-3 top-4 w-4 h-4 text-gray-400" />
               <Input
-                id="checkout"
-                type="date"
-                className="pl-7 h-10 md:h-12 text-sm md:text-base"
+                id="adults"
+                name="adults"
+                type="number"
+                min="1"
+                placeholder="Adult Persons"
+                className="pl-10 h-12"
+                value={searchData.adults}
+                onChange={e => setSearchData({ ...searchData, adults: e.target.value })}
+                required
               />
             </div>
           </div>
-        </div>
 
-        {/* Persons */}
-        <div className="md:col-span-1">
-          <Label htmlFor="persons" className="text-sm font-medium text-gray-700 mb-2 block">
-            Persons
-          </Label>
-          <div className="relative">
-            <Users className="absolute left-3 top-4 w-4 h-4 text-gray-400" />
-            <Input
-              id="persons"
-              type="number"
-              min="1"
-              placeholder="Adult Persons"
-              className="pl-10 h-12"
-            />
+          {/* Children */}
+          <div className="md:col-span-1">
+            <Label htmlFor="children" className="text-sm font-medium text-gray-700 mb-2 block">
+              Children
+            </Label>
+            <div className="relative">
+              <Baby className="absolute left-3 top-4 w-4 h-4 text-gray-400" />
+              <Input
+                id="children"
+                name="children"
+                type="number"
+                min="0"
+                placeholder="Children"
+                className="pl-10 h-12"
+                value={searchData.children}
+                onChange={e => setSearchData({ ...searchData, children: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Search Button */}
+          <div className="md:col-span-1 flex items-end">
+            <Button type="submit" variant="booking" className="w-full h-10 md:h-12 text-sm md:text-base">
+              Search
+            </Button>
           </div>
         </div>
-
-        {/* Children */}
-        <div className="md:col-span-1">
-          <Label htmlFor="children" className="text-sm font-medium text-gray-700 mb-2 block">
-            Children
-          </Label>
-          <div className="relative">
-            <Baby className="absolute left-3 top-4 w-4 h-4 text-gray-400" />
-            <Input
-              id="children"
-              type="number"
-              min="0"
-              placeholder="Children"
-              className="pl-10 h-12"
-            />
-          </div>
-        </div>
-
-        {/* Search Button */}
-        <div className="md:col-span-1 flex items-end">
-          <Button variant="booking" className="w-full h-10 md:h-12 text-sm md:text-base">
-            Search
-          </Button>
-        </div>
-      </div>
-    </Card>
+      </Card>
+    </form>
   );
 };
 

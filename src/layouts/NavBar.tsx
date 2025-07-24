@@ -42,7 +42,6 @@ const NavBar = () => {
                         : "text-gray-600 hover:text-primary"
                     }`
                   }
-                  end={item.href === "/"}
                 >
                   {item.name}
                 </NavLink>
