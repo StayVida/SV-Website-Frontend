@@ -2,16 +2,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin } from "lucide-react";
 import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+interface Amenity {
+  name: string;
+  icon: string; // emoji character from data.json
+}
 
 interface Hotel {
   id: number;
   name: string;
   type: string;
-  destination:string;
-  location: string;
+  destination: string;
+  location?: string;
   rating: number;
   pricePerNight: number;
-  amenities: string[];
+  amenities: Amenity[];
   images: string[];
 }
 
@@ -20,8 +26,10 @@ interface ResultsProps {
 }
 
 const Results: React.FC<ResultsProps> = ({ hotels }) => {
+  const navigate = useNavigate();
+  const { checkIn, checkOut, adults, children } = useParams();
   return (
-    <div className="flex-1">
+    <div className="flex-1 h-full overflow-y-auto">
       {/* Results Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4 sm:mb-0">{hotels.length} properties found</h2>
@@ -51,15 +59,14 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
                 <span className="text-sm text-gray-600">{hotel.destination}</span>
               </div>
               <div className="flex flex-wrap gap-1 mb-4">
-                {hotel.amenities.slice(0, 4).map((amenity, index) => (
+                {(hotel.amenities || []).slice(0, 3).map((amenity, index) => (
                   <span key={index} className="px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded">
-                    {amenity}
+                    <span className="mr-1">{amenity.icon}</span>
+                    {amenity.name}
                   </span>
                 ))}
-                {hotel.amenities.length > 4 && (
-                  <span className="px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded">
-                    +{hotel.amenities.length - 4} more
-                  </span>
+                {(hotel.amenities?.length || 0) > 3 && (
+                  <span className="px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded">...</span>
                 )}
               </div>
               <div className="flex items-center justify-between">
@@ -67,7 +74,7 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
                   <span className="text-2xl font-bold">₹{hotel.pricePerNight.toLocaleString()}</span>
                   <span className="text-gray-600 text-sm">/night</span>
                 </div>
-                <Button className="bg-gray-900 hover:bg-gray-800 text-white">View Details</Button>
+                <Button className="bg-primary hover:bg-primary/80 text-white" onClick={() => navigate(`/hotel/${hotel.id}/${checkIn}/${checkOut}/${adults}/${children}`)}>View Details</Button>
               </div>
             </CardContent>
           </Card>

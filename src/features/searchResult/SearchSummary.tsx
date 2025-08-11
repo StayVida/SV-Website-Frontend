@@ -9,6 +9,14 @@ interface SearchData {
     children: string
   }
 
+// Utility to format yyyy-mm-dd to dd/mm/yyyy
+function formatDateDMY(dateStr: string) {
+  if (!dateStr) return "";
+  const [year, month, day] = dateStr.split("-");
+  if (!year || !month || !day) return dateStr;
+  return `${day}/${month}/${year}`;
+}
+
 function SearchSummary({searchData}: {searchData: SearchData}) {
   return (
     <div className="bg-white border-b">
@@ -20,7 +28,7 @@ function SearchSummary({searchData}: {searchData: SearchData}) {
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-2" />
                   <span>
-                    {searchData.checkIn} - {searchData.checkOut}
+                    {formatDateDMY(searchData.checkIn)} - {formatDateDMY(searchData.checkOut)}
                   </span>
                 </div>
                 <div className="flex items-center">

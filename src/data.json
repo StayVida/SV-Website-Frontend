@@ -6,7 +6,14 @@
     "destination": "Goa, India",
     "rating": 4.5,
     "pricePerNight": 4500,
-    "amenities": ["Pool", "WiFi", "Breakfast", "Spa"],
+    "tags": ["Beachfront", "Luxury", "Ocean View"],
+    "amenities": [
+      { "name": "Pool", "icon": "🏊" },
+      { "name": "WiFi", "icon": "📶" },
+      { "name": "Breakfast", "icon": "🍳" },
+      { "name": "Spa", "icon": "💆" },
+      { "name": "Parking", "icon": "🚗" }
+    ],
     "images": [
       "/images/ocean-view-1.jpg",
       "/images/ocean-view-2.jpg"
@@ -14,12 +21,18 @@
     "description": "A luxurious beachfront resort with breathtaking ocean views and modern amenities.",
     "rooms": [
       {
-        "type": "Deluxe Ocean View",
+        "id": "r1-1",
+        "name": "Deluxe Ocean View",
+        "images": ["/images/ocean-view-1.jpg"],
+        "features": ["Balcony", "Sea View", "King Bed"],
         "price": 5000,
         "available": 5
       },
       {
-        "type": "Premium Suite",
+        "id": "r1-2",
+        "name": "Premium Suite",
+        "images": ["/images/ocean-view-2.jpg"],
+        "features": ["Jacuzzi", "Living Area", "Sea View"],
         "price": 8000,
         "available": 2
       }
@@ -32,7 +45,12 @@
     "destination": "Manali, India",
     "rating": 4.2,
     "pricePerNight": 3200,
-    "amenities": ["WiFi", "Breakfast", "Parking"],
+    "tags": ["Mountain View", "Cozy", "Family Friendly"],
+    "amenities": [
+      { "name": "WiFi", "icon": "📶" },
+      { "name": "Breakfast", "icon": "🍳" },
+      { "name": "Parking", "icon": "🚗" }
+    ],
     "images": [
       "/images/mountain-breeze-1.jpg",
       "/images/mountain-breeze-2.jpg"
@@ -40,12 +58,18 @@
     "description": "Cozy rooms and a warm atmosphere nestled in the beautiful mountains of Manali.",
     "rooms": [
       {
-        "type": "Standard Room",
+        "id": "r2-1",
+        "name": "Standard Room",
+        "images": ["/images/mountain-breeze-1.jpg"],
+        "features": ["Heater", "Double Bed", "Mountain View"],
         "price": 3000,
         "available": 8
       },
       {
-        "type": "Family Suite",
+        "id": "r2-2",
+        "name": "Family Suite",
+        "images": ["/images/mountain-breeze-2.jpg"],
+        "features": ["2 Bedrooms", "Living Area", "Balcony"],
         "price": 5500,
         "available": 3
       }
@@ -58,7 +82,14 @@
     "destination": "Jaipur, India",
     "rating": 4.8,
     "pricePerNight": 7500,
-    "amenities": ["Pool", "WiFi", "Private Garden", "Kitchen"],
+    "tags": ["Private", "Rajasthani Architecture", "Luxury Stay"],
+    "amenities": [
+      { "name": "Pool", "icon": "🏊" },
+      { "name": "WiFi", "icon": "📶" },
+      { "name": "Private Garden", "icon": "🌳" },
+      { "name": "Kitchen", "icon": "🍽️" },
+      { "name": "Parking", "icon": "🚗" }
+    ],
     "images": [
       "/images/urban-stay-1.jpg",
       "/images/urban-stay-2.jpg"
@@ -66,7 +97,10 @@
     "description": "An elegant private villa with traditional Rajasthani architecture and modern facilities.",
     "rooms": [
       {
-        "type": "Entire Villa",
+        "id": "r3-1",
+        "name": "Entire Villa",
+        "images": ["/images/urban-stay-1.jpg", "/images/urban-stay-2.jpg"],
+        "features": ["3 Bedrooms", "Private Pool", "Garden", "Full Kitchen"],
         "price": 7500,
         "available": 1
       }
@@ -79,7 +113,13 @@
     "destination": "Delhi, India",
     "rating": 3.9,
     "pricePerNight": 1800,
-    "amenities": ["WiFi", "Breakfast", "Air Conditioning"],
+    "tags": ["Budget Stay", "Central Location", "Business Travel"],
+    "amenities": [
+      { "name": "WiFi", "icon": "📶" },
+      { "name": "Breakfast", "icon": "🍳" },
+      { "name": "Air Conditioning", "icon": "❄️" },
+      { "name": "Parking", "icon": "🚗" }
+    ],
     "images": [
       "/images/city-lights-1.jpg",
       "/images/city-lights-2.jpg"
@@ -87,12 +127,18 @@
     "description": "Affordable and comfortable guest house located in the heart of Delhi.",
     "rooms": [
       {
-        "type": "Single Room",
+        "id": "r4-1",
+        "name": "Single Room",
+        "images": ["/images/city-lights-1.jpg"],
+        "features": ["Single Bed", "Desk", "AC"],
         "price": 1500,
         "available": 10
       },
       {
-        "type": "Double Room",
+        "id": "r4-2",
+        "name": "Double Room",
+        "images": ["/images/city-lights-2.jpg"],
+        "features": ["Double Bed", "TV", "AC"],
         "price": 2000,
         "available": 5
       }

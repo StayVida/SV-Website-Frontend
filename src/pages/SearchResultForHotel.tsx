@@ -54,15 +54,18 @@ function SearchResult() {
     // Hotel type filter
     if (hotelTypes.length > 0 && !hotelTypes.includes(hotel.type)) return false;
     // Amenities filter
-    if (amenities.length > 0 && !amenities.every(a => hotel.amenities.includes(a))) return false;
+    if (
+      amenities.length > 0 &&
+      !amenities.every(a => hotel.amenities.some((am: { name: string }) => am.name === a))
+    ) return false;
     return true;
   });
 
   return (
     <>
       <SearchSummary searchData={searchData} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-8">
+        <div className="flex flex-col lg:flex-row gap-8 h-screen min-h-0">
           <FilterSidebar
             maxPrice={maxPrice}
             setMaxPrice={setMaxPrice}

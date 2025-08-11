@@ -63,6 +63,7 @@ const BookingSearchForm = () => {
                   id="checkin"
                   name="checkIn"
                   type="date"
+                  placeholder="dd/mm/yyyy"
                   className="pl-7 h-10 md:h-12 text-sm md:text-base"
                   value={searchData.checkIn}
                   onChange={e => setSearchData({ ...searchData, checkIn: e.target.value })}
@@ -80,6 +81,7 @@ const BookingSearchForm = () => {
                   id="checkout"
                   name="checkOut"
                   type="date"
+                  placeholder="dd/mm/yyyy"
                   className="pl-7 h-10 md:h-12 text-sm md:text-base"
                   value={searchData.checkOut}
                   onChange={e => setSearchData({ ...searchData, checkOut: e.target.value })}
