@@ -2,17 +2,17 @@ import { useState } from "react"
 import heroBg from "@/assets/hero-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import BookingSearchForm from "@/features/homePage/BookingSearchForm";
-import EventBookingForm from "@/features/homePage/EventBookingForm";
-import ServicesCard from "@/features/homePage/ServicesCard";
-import HowItWorkEvent from "@/features/homePage/HowItWorkEvent";
-import FeaturedProperties from "@/features/homePage/FeaturedProperties";
-import WhyChoose from "@/features/homePage/WhyChoose";
-import TestimonialForHotel from "@/features/homePage/TestimonialForHotel";
-import ExploreEvent from "@/features/homePage/ExploreEvent";
-import PopularVenues from "@/features/homePage/PopularVenues";
-import TestimonialForEvent from "@/features/homePage/TestimonialForEvent";
-import WhyChooseEvent from "@/features/homePage/WhyChooseEvent";
+import BookingSearchForm from "@/components/homePage/BookingSearchForm";
+import EventBookingForm from "@/components/homePage/EventBookingForm";
+import ServicesCard from "@/components/homePage/ServicesCard";
+import HowItWorkEvent from "@/components/homePage/HowItWorkEvent";
+import FeaturedProperties from "@/components/homePage/FeaturedProperties";
+import WhyChoose from "@/components/homePage/WhyChoose";
+import TestimonialForHotel from "@/components/homePage/TestimonialForHotel";
+import ExploreEvent from "@/components/homePage/ExploreEvent";
+import PopularVenues from "@/components/homePage/PopularVenues";
+import TestimonialForEvent from "@/components/homePage/TestimonialForEvent";
+import WhyChooseEvent from "@/components/homePage/WhyChooseEvent";
 
 function HomePage() {
   const [activeForm,setActiveForm] = useState("hotel")

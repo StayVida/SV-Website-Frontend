@@ -6,7 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { CalendarDays, MapPin, Users, Baby} from "lucide-react";
 
-const BookingSearchForm = () => {
+interface SearchData {
+  destination: string;
+  checkIn: string;
+  checkOut: string;
+  adults: string;
+  children: string;
+}
+
+interface BookingSearchFormProps {
+  onSearch?: (searchData: SearchData) => void;
+}
+
+const BookingSearchForm = ({ onSearch }: BookingSearchFormProps) => {
   const [searchData, setSearchData] = useState({
     destination: "",
     checkIn: "",
@@ -20,7 +32,13 @@ const BookingSearchForm = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Build path params
+    // If onSearch prop is provided, use it instead of navigation
+    if (onSearch) {
+      onSearch(searchData);
+      return;
+    }
+
+    // Build path params for navigation
     const destination = encodeURIComponent(searchData.destination || "Goa, India");
     const checkIn = encodeURIComponent(searchData.checkIn || "15 Mar");
     const checkOut = encodeURIComponent(searchData.checkOut || "18 Mar");

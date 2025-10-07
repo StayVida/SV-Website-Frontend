@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Home, Building, Calendar, Info, Phone } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import AuthDialog from "@/components/auth/AuthDialog";
 
 const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
@@ -51,10 +53,23 @@ const NavBar = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="default" size="lg" className="text-primary bg-background border-primary border-1 hover:text-white">
-              Get Start
+            <Button 
+              variant="default" 
+              size="lg" 
+              className="text-primary bg-background border-primary border-1 hover:text-white"
+              onClick={() => setIsAuthDialogOpen(true)}
+            >
+              Get Started
             </Button>
-            <Button variant="default" size="lg">
+            <Button 
+              variant="default" 
+              size="lg"
+              onClick={() => {
+                // Handle property registration - could be a separate page or dialog
+                console.log("Navigate to property registration");
+                // For now, we'll just log it. You can add navigation or another dialog here
+              }}
+            >
               Register Property
             </Button>
           </div>
@@ -99,10 +114,25 @@ const NavBar = () => {
                 </NavLink>
               ))}
               <div className="flex flex-col space-y-2 px-3 pt-4">
-                <Button variant="outline" size="sm" className="border-1 border-primary text-primary">
-                  Get Start
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-1 border-primary text-primary"
+                  onClick={() => {
+                    setIsAuthDialogOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Get Started
                 </Button>
-                <Button variant="default" size="sm">
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  onClick={() => {
+                    console.log("Navigate to property registration");
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
                   Register Property
                 </Button>
               </div>
@@ -110,6 +140,12 @@ const NavBar = () => {
           </div>
         )}
       </nav>
+
+      {/* Auth Dialog */}
+      <AuthDialog 
+        open={isAuthDialogOpen} 
+        onOpenChange={setIsAuthDialogOpen}
+      />
     </header>
   );
 };

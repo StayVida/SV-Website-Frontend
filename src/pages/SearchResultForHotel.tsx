@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import SearchSummary from "@/features/searchResult/SearchSummary"
-import FilterSidebar from "@/features/searchResult/FilterSidebar"
-import Results from "@/features/searchResult/Results"
+import SearchSummary from "@/components/searchResult/SearchSummary"
+import FilterSidebar from "@/components/searchResult/FilterSidebar"
+import Results from "@/components/searchResult/Results"
 import hotelData from "@/data.json"
 
 interface SearchData {

@@ -5,6 +5,7 @@
     "type": "Resort",
     "destination": "Goa, India",
     "rating": 4.5,
+    "isForEvent":false,
     "pricePerNight": 4500,
     "tags": ["Beachfront", "Luxury", "Ocean View"],
     "amenities": [
@@ -44,6 +45,7 @@
     "type": "Hotel",
     "destination": "Manali, India",
     "rating": 4.2,
+    "isForEvent":false,
     "pricePerNight": 3200,
     "tags": ["Mountain View", "Cozy", "Family Friendly"],
     "amenities": [
@@ -81,6 +83,7 @@
     "type": "Villa",
     "destination": "Jaipur, India",
     "rating": 4.8,
+    "isForEvent":false,
     "pricePerNight": 7500,
     "tags": ["Private", "Rajasthani Architecture", "Luxury Stay"],
     "amenities": [
@@ -110,6 +113,7 @@
     "id": 4,
     "name": "City Lights Guest House",
     "type": "Guest House",
+    "isForEvent":false,
     "destination": "Delhi, India",
     "rating": 3.9,
     "pricePerNight": 1800,
@@ -143,6 +147,136 @@
         "available": 5
       }
     ]
+  },
+  {
+    "id": "event-1",
+    "name": "Sunset Beach Wedding",
+    "type": "Wedding",
+    "isForEvent":true,
+    "destination": "Goa, India",
+    "location": "Candolim Beach",
+    "rating": 4.8,
+    "pricePerEvent": 150000,
+    "capacity": 100,
+    "date": "2024-03-15",
+    "time": "18:00",
+    "tags": ["Beachfront", "Romantic", "Sunset"],
+    "amenities": [
+      { "name": "Catering", "icon": "🍽️" },
+      { "name": "Photography", "icon": "📸" },
+      { "name": "Music", "icon": "🎵" },
+      { "name": "Decoration", "icon": "🎨" },
+      { "name": "Parking", "icon": "🚗" }
+    ],
+    "images": [
+      "/images/beach-wedding-1.jpg",
+      "/images/beach-wedding-2.jpg"
+    ],
+    "description": "A romantic beach wedding venue with stunning sunset views and professional services."
+  },
+  {
+    "id": "event-2",
+    "name": "Corporate Conference Hall",
+    "type": "Conference",
+    "isForEvent":true,
+    "destination": "Mumbai, India",
+    "location": "Bandra Kurla Complex",
+    "rating": 4.6,
+    "pricePerEvent": 75000,
+    "capacity": 200,
+    "date": "2024-03-20",
+    "time": "09:00",
+    "tags": ["Professional", "Modern", "Tech-Enabled"],
+    "amenities": [
+      { "name": "WiFi", "icon": "📶" },
+      { "name": "Projector", "icon": "📺" },
+      { "name": "Catering", "icon": "🍽️" },
+      { "name": "Parking", "icon": "🚗" },
+      { "name": "Air Conditioning", "icon": "❄️" }
+    ],
+    "images": [
+      "/images/conference-1.jpg",
+      "/images/conference-2.jpg"
+    ],
+    "description": "State-of-the-art conference facility with modern amenities and professional support."
+  },
+  {
+    "id": "event-3",
+    "name": "Garden Party Venue",
+    "type": "Party",
+    "isForEvent":true,
+    "destination": "Bangalore, India",
+    "location": "Whitefield",
+    "rating": 4.4,
+    "pricePerEvent": 45000,
+    "capacity": 150,
+    "date": "2024-03-25",
+    "time": "19:00",
+    "tags": ["Outdoor", "Garden", "Family Friendly"],
+    "amenities": [
+      { "name": "Catering", "icon": "🍽️" },
+      { "name": "Music", "icon": "🎵" },
+      { "name": "Lighting", "icon": "💡" },
+      { "name": "Parking", "icon": "🚗" },
+      { "name": "Security", "icon": "🔒" }
+    ],
+    "images": [
+      "/images/garden-party-1.jpg",
+      "/images/garden-party-2.jpg"
+    ],
+    "description": "Beautiful outdoor garden venue perfect for celebrations and gatherings."
+  },
+  {
+    "id": "event-4",
+    "name": "Birthday Celebration Hall",
+    "type": "Birthday",
+    "isForEvent":true,
+    "destination": "Delhi, India",
+    "location": "Connaught Place",
+    "rating": 4.3,
+    "pricePerEvent": 35000,
+    "capacity": 80,
+    "date": "2024-03-30",
+    "time": "16:00",
+    "tags": ["Indoor", "Colorful", "Fun"],
+    "amenities": [
+      { "name": "Catering", "icon": "🍽️" },
+      { "name": "Music", "icon": "🎵" },
+      { "name": "Decoration", "icon": "🎨" },
+      { "name": "Games", "icon": "🎮" },
+      { "name": "Parking", "icon": "🚗" }
+    ],
+    "images": [
+      "/images/birthday-1.jpg",
+      "/images/birthday-2.jpg"
+    ],
+    "description": "Vibrant indoor venue designed for memorable birthday celebrations."
+  },
+  {
+    "id": "event-5",
+    "name": "Luxury Wedding Palace",
+    "type": "Wedding",
+    "isForEvent":true,
+    "destination": "Jaipur, India",
+    "location": "Pink City",
+    "rating": 4.9,
+    "pricePerEvent": 300000,
+    "capacity": 300,
+    "date": "2024-04-05",
+    "time": "18:30",
+    "tags": ["Palace", "Luxury", "Traditional"],
+    "amenities": [
+      { "name": "Catering", "icon": "🍽️" },
+      { "name": "Photography", "icon": "📸" },
+      { "name": "Music", "icon": "🎵" },
+      { "name": "Decoration", "icon": "🎨" },
+      { "name": "Valet Parking", "icon": "🚗" }
+    ],
+    "images": [
+      "/images/palace-wedding-1.jpg",
+      "/images/palace-wedding-2.jpg"
+    ],
+    "description": "Opulent palace venue for grand wedding celebrations with royal treatment."
   }
 ]
 

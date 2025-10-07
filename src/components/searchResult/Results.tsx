@@ -71,7 +71,7 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-2xl font-bold">₹{hotel.pricePerNight.toLocaleString()}</span>
+                  <span className="text-2xl font-bold">₹{hotel.pricePerNight?.toLocaleString()}</span>
                   <span className="text-gray-600 text-sm">/night</span>
                 </div>
                 <Button className="bg-primary hover:bg-primary/80 text-white" onClick={() => navigate(`/hotel/${hotel.id}/${checkIn}/${checkOut}/${adults}/${children}`)}>View Details</Button>
