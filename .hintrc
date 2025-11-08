@@ -12,6 +12,7 @@
       {
         "button-name": "off"
       }
-    ]
+    ],
+    "typescript-config/is-valid": "off"
   }
 }

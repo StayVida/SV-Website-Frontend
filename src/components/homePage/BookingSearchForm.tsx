@@ -38,10 +38,10 @@ const BookingSearchForm = ({ onSearch }: BookingSearchFormProps) => {
       return;
     }
 
-    // Build path params for navigation
-    const destination = encodeURIComponent(searchData.destination || "Goa, India");
-    const checkIn = encodeURIComponent(searchData.checkIn || "15 Mar");
-    const checkOut = encodeURIComponent(searchData.checkOut || "18 Mar");
+    // Build path params for navigation (dates already in yyyy-mm-dd from input[type=date])
+    const destination = encodeURIComponent(searchData.destination);
+    const checkIn = encodeURIComponent(searchData.checkIn);
+    const checkOut = encodeURIComponent(searchData.checkOut);
     const adults = encodeURIComponent(searchData.adults);
     const children = encodeURIComponent(searchData.children);
     navigate(`/search/${destination}/${checkIn}/${checkOut}/${adults}/${children}`);

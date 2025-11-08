@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
-import { Mail, Lock, Eye, EyeOff, User, Phone } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, Phone, MessageSquare } from "lucide-react";
+import { loginWithGoogle, saveUserData, requestOtp, verifyOtp } from "@/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 interface AuthDialogProps {
@@ -17,10 +19,18 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { login } = useAuth();
+  const [gsiReady, setGsiReady] = useState(false);
+  const [otpStep, setOtpStep] = useState<'email' | 'otp'>('email');
+  const [otpEmail, setOtpEmail] = useState("");
 
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
+  });
+  
+  const [otpData, setOtpData] = useState({
+    otp: "",
   });
 
   const [signupData, setSignupData] = useState({
@@ -32,16 +42,81 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     confirmPassword: "",
   });
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
+  // Load Google Identity Services script
+  useEffect(() => {
+    const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+    if (existing) {
+      setGsiReady(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setGsiReady(true);
+    script.onerror = () => setGsiReady(false);
+    document.head.appendChild(script);
+  }, []);
+
+  const handleOtpRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      await requestOtp(loginData.email);
+      setOtpEmail(loginData.email);
+      setOtpStep('otp');
+    } catch (error: any) {
+      console.error('OTP request error:', error);
+      setErrors({
+        general: error.response?.data?.message || 'Failed to send OTP. Please try again.'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOtpVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrors({});
     
-    console.log("Login data:", loginData);
-    setIsLoading(false);
-    onOpenChange(false);
+    try {
+      const response = await verifyOtp(otpEmail, otpData.otp);
+      
+      if (response.success) {
+        // Save user data and token
+        const userData = {
+          username: response.username,
+          email: response.email,
+          role: response.role,
+        };
+        
+        saveUserData(userData, response.token);
+        login(userData);
+        
+        // Reset form
+        setLoginData({ email: "", password: "" });
+        setOtpData({ otp: "" });
+        setOtpStep('email');
+        setOtpEmail("");
+        onOpenChange(false);
+      }
+    } catch (error: any) {
+      console.error('OTP verification error:', error);
+      setErrors({
+        general: error.response?.data?.message || 'Invalid OTP. Please try again.'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBackToEmail = () => {
+    setOtpStep('email');
+    setOtpData({ otp: "" });
+    setErrors({});
   };
 
   const handleSignupSubmit = async (e: React.FormEvent) => {
@@ -72,6 +147,59 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     console.log("Signup data:", signupData);
     setIsLoading(false);
     onOpenChange(false);
+  };
+
+  const handleGoogleContinue = async () => {
+    try {
+      setIsLoading(true);
+      setErrors({});
+
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+      if (!clientId) {
+        throw new Error('Missing VITE_GOOGLE_CLIENT_ID');
+      }
+      const google = (window as any).google;
+      if (!gsiReady || !google?.accounts?.id) {
+        throw new Error('Google services not ready. Please try again.');
+      }
+
+      await new Promise<void>((resolve) => {
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: async (credentialResponse: any) => {
+            try {
+              const idToken = credentialResponse?.credential as string;
+              if (!idToken) throw new Error('No credential received from Google');
+
+              const response = await loginWithGoogle(idToken);
+              if (response.success) {
+                const userData = {
+                  username: response.username,
+                  email: response.email,
+                  role: response.role,
+                };
+                saveUserData(userData, response.token);
+                login(userData);
+                onOpenChange(false);
+              }
+            } catch (err) {
+              console.error('Google login error:', err);
+              setErrors({ general: (err as any)?.message || 'Google sign-in failed. Please try again.' });
+            } finally {
+              resolve();
+            }
+          },
+        });
+        google.accounts.id.prompt();
+      });
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      setErrors({
+        general: error.response?.data?.message || 'Google sign-in failed. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLoginInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +234,20 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const switchToLogin = () => {
     setIsLogin(true);
     setErrors({});
+    setOtpStep('email');
+    setOtpEmail("");
+    setOtpData({ otp: "" });
   };
+
+  // Reset OTP step when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setOtpStep('email');
+      setOtpEmail("");
+      setOtpData({ otp: "" });
+      setErrors({});
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -152,77 +293,99 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
 
         <div className="p-6 bg-white">
           {isLogin ? (
-            // Login Form
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="login-email" className="text-gray-700 font-medium">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="login-email"
-                    name="email"
-                    type="email"
-                    value={loginData.email}
-                    onChange={handleLoginInputChange}
-                    className="pl-10 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Enter your email"
-                    required
-                  />
+            // Login Form - OTP Flow
+            otpStep === 'email' ? (
+              <form onSubmit={handleOtpRequest} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="login-email" className="text-gray-700 font-medium">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="login-email"
+                      name="email"
+                      type="email"
+                      value={loginData.email}
+                      onChange={handleLoginInputChange}
+                      className="pl-10 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="login-password" className="text-gray-700 font-medium">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="login-password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    value={loginData.password}
-                    onChange={handleLoginInputChange}
-                    className="pl-10 pr-10 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Enter your password"
-                    required
-                  />
+                {errors.general && (
+                  <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
+                    {errors.general}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full text-white font-medium py-2.5"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Sending OTP..." : "Send OTP"}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleOtpVerify} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="otp-email" className="text-gray-700 font-medium">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="otp-email"
+                      type="email"
+                      value={otpEmail}
+                      disabled
+                      className="pl-10 bg-gray-50 border-gray-300 text-gray-600"
+                    />
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 h-4 w-4 text-gray-400 hover:text-gray-600 bg-transparent"
+                    onClick={handleBackToEmail}
+                    className="text-sm text-green-600 hover:text-green-700 font-medium bg-transparent"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    Change email
                   </button>
                 </div>
-              </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <input
-                    id="remember"
-                    type="checkbox"
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                    aria-label="Remember me"
-                  />
-                  <Label htmlFor="remember" className="text-sm text-gray-600">
-                    Remember me
-                  </Label>
+                <div className="space-y-2">
+                  <Label htmlFor="login-otp" className="text-gray-700 font-medium">OTP</Label>
+                  <div className="relative">
+                    <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="login-otp"
+                      name="otp"
+                      type="text"
+                      value={otpData.otp}
+                      onChange={(e) => setOtpData({ otp: e.target.value })}
+                      className="pl-10 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="Enter OTP"
+                      maxLength={6}
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    We've sent a 6-digit OTP to {otpEmail}
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  className="text-sm text-green-600 hover:text-green-700 font-medium bg-transparent"
-                >
-                  Forgot password?
-                </button>
-              </div>
 
-              <Button
-                type="submit"
-                className="w-full text-white font-medium py-2.5"
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing in..." : "Sign In"}
-              </Button>
-            </form>
+                {errors.general && (
+                  <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
+                    {errors.general}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full text-white font-medium py-2.5"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Verifying..." : "Verify OTP"}
+                </Button>
+              </form>
+            )
           ) : (
             // Signup Form
             <form onSubmit={handleSignupSubmit} className="space-y-4">
@@ -398,12 +561,13 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mt-4">
+            <div className="grid grid-cols-1 gap-3 mt-4">
               <Button
                 type="button"
                 variant="outline"
                 className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
-                onClick={() => console.log(`${isLogin ? 'Google login' : 'Google signup'}`)}
+                onClick={handleGoogleContinue}
+                disabled={isLoading}
               >
                 <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                   <path
@@ -423,18 +587,7 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Google
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
-                onClick={() => console.log(`${isLogin ? 'Facebook login' : 'Facebook signup'}`)}
-              >
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-                Facebook
+                {isLoading ? 'Connecting…' : 'Continue with Google'}
               </Button>
             </div>
           </div>

@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Home, Building, Calendar, Info, Phone } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { Menu, X, Home, Building, Calendar, Info, Phone, LayoutDashboard } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
 import AuthDialog from "@/components/auth/AuthDialog";
+import { Avatar } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 
 const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const { user, isLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
@@ -53,25 +57,58 @@ const NavBar = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="default" 
-              size="lg" 
-              className="text-primary bg-background border-primary border-1 hover:text-white"
-              onClick={() => setIsAuthDialogOpen(true)}
-            >
-              Get Started
-            </Button>
-            <Button 
-              variant="default" 
-              size="lg"
-              onClick={() => {
-                // Handle property registration - could be a separate page or dialog
-                console.log("Navigate to property registration");
-                // For now, we'll just log it. You can add navigation or another dialog here
-              }}
-            >
-              Register Property
-            </Button>
+            {isLoggedIn ? (
+              <>
+                {user?.role !== 'user' && (
+                  <Button 
+                    variant="default" 
+                    size="lg"
+                    className="text-primary bg-background border-primary border-1 hover:text-white"
+                    onClick={() => {
+                      console.log("Navigate to dashboard");
+                      // Add navigation to dashboard here
+                    }}
+                  >
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
+                )}
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  <Avatar className="h-8 w-8">
+                    <div className="h-full w-full bg-transparent rounded-full flex items-center justify-center">
+                      <span className="text-white font-medium text-sm">
+                        {user?.username.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  </Avatar>
+                </button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  className="text-primary bg-background border-primary border-1 hover:text-white"
+                  onClick={() => setIsAuthDialogOpen(true)}
+                >
+                  Get Started
+                </Button>
+                <Button 
+                  variant="default" 
+                  size="lg"
+                  onClick={() => {
+                    // Handle property registration - could be a separate page or dialog
+                    console.log("Navigate to property registration");
+                    // For now, we'll just log it. You can add navigation or another dialog here
+                  }}
+                >
+                  Register Property
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -114,27 +151,63 @@ const NavBar = () => {
                 </NavLink>
               ))}
               <div className="flex flex-col space-y-2 px-3 pt-4">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="border-1 border-primary text-primary"
-                  onClick={() => {
-                    setIsAuthDialogOpen(true);
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Get Started
-                </Button>
-                <Button 
-                  variant="default" 
-                  size="sm"
-                  onClick={() => {
-                    console.log("Navigate to property registration");
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Register Property
-                </Button>
+                {isLoggedIn ? (
+                  <>
+                    {user?.role !== 'user' && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-1 border-primary text-primary"
+                        onClick={() => {
+                          console.log("Navigate to dashboard");
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <LayoutDashboard className="w-4 h-4 mr-2" />
+                        Dashboard
+                      </Button>
+                    )}
+                    <button
+                      onClick={() => {
+                        navigate('/profile');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg mx-auto"
+                    >
+                      <Avatar className="h-8 w-8">
+                        <div className="h-full w-full bg-transparent rounded-full flex items-center justify-center">
+                          <span className="text-white font-medium text-sm">
+                            {user?.username.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      </Avatar>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-1 border-primary text-primary"
+                      onClick={() => {
+                        setIsAuthDialogOpen(true);
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Get Started
+                    </Button>
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => {
+                        console.log("Navigate to property registration");
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Register Property
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
