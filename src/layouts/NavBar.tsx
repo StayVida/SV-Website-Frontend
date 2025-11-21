@@ -20,6 +20,14 @@ const NavBar = () => {
     { name: "Contact", href: "/contact", icon: Phone },
   ];
 
+  const handleRegisterProperty = () => {
+    if (!isAuthenticated) {
+      setIsAuthDialogOpen(true);
+      return;
+    }
+    navigate("/register-property");
+  };
+
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-gray-200">
       <nav className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,11 +80,7 @@ const NavBar = () => {
             <Button 
               variant="default" 
               size="lg"
-              onClick={() => {
-                // Handle property registration - could be a separate page or dialog
-                console.log("Navigate to property registration");
-                // For now, we'll just log it. You can add navigation or another dialog here
-              }}
+              onClick={handleRegisterProperty}
             >
               Register Property
             </Button>
@@ -180,10 +184,10 @@ const NavBar = () => {
                     <Button 
                       variant="default" 
                       size="sm"
-                      onClick={() => {
-                        console.log("Navigate to property registration");
-                        setIsMobileMenuOpen(false);
-                      }}
+                    onClick={() => {
+                      handleRegisterProperty();
+                      setIsMobileMenuOpen(false);
+                    }}
                     >
                       Register Property
                     </Button>
