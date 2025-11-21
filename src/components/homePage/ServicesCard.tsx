@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Building,CalendarIcon,  } from "lucide-react";
+import { Building, CalendarIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ServicesCard = () => {
@@ -22,7 +22,7 @@ const ServicesCard = () => {
               Find and book the perfect stay from our curated collection of hotels.
             </p>
             <Link
-              to="#"
+              to="/hotels"
               className="text-green-600 hover:text-green-700 font-medium text-sm lg:text-base"
             >
               Learn More →
@@ -61,7 +61,10 @@ const ServicesCard = () => {
             <p className="text-sm lg:text-base text-gray-600">
               End-to-end event planning and execution services for any occasion.
             </p>
-            <Link to="#" className="text-green-600 hover:text-green-700 font-medium text-sm lg:text-base">
+            <Link 
+              to="/events" 
+              className="text-green-600 hover:text-green-700 font-medium text-sm lg:text-base"
+            >
               Learn More →
             </Link>
           </CardContent>

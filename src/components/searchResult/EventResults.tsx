@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin, Users } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 interface Amenity {
@@ -32,7 +32,16 @@ interface EventResultsProps {
 
 const EventResults: React.FC<EventResultsProps> = ({ events }) => {
   const navigate = useNavigate();
-  const { checkIn, checkOut, adults, children, eventType } = useParams();
+  const params = useParams();
+  const checkIn = params.checkIn || "";
+  const checkOut = params.checkOut || "";
+  const adults = params.adults || "2";
+  const children = params.children || "0";
+  const eventType = params.eventType || "";
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [events.length]);
   
   // const formatDate = (dateStr: string) => {
   //   if (!dateStr) return "";
@@ -63,6 +72,9 @@ const EventResults: React.FC<EventResultsProps> = ({ events }) => {
                 src={event.images && event.images[0] ? event.images[0] : "/placeholder.svg"}
                 alt={event.name}
                 className="object-cover w-full h-full"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/placeholder.svg";
+                }}
               />
               <div className="absolute top-3 left-3">
                 <span className="bg-white/90 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
@@ -118,14 +130,19 @@ const EventResults: React.FC<EventResultsProps> = ({ events }) => {
               
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-2xl font-bold text-green-600">
-                    ₹{event.pricePerEvent.toLocaleString()}
-                  </span>
-                  {/* <span className="text-gray-600 text-sm"></span> */}
+                  {event.pricePerEvent > 0 ? (
+                    <span className="text-2xl font-bold text-green-600">
+                      ₹{event.pricePerEvent.toLocaleString()}
+                    </span>
+                  ) : (
+                    <span className="text-lg font-semibold text-gray-600">
+                      Price on request
+                    </span>
+                  )}
                 </div>
                 <Button 
                   className="bg-green-600 hover:bg-green-700 text-white" 
-                  onClick={() => navigate(`/event/${event.id}/${checkIn}/${checkOut}/${adults}/${children || ''}/${eventType || ''}`)}
+                  onClick={() => navigate(`/event/${event.id}/${encodeURIComponent(checkIn)}/${encodeURIComponent(checkOut)}/${adults}/${children || '0'}/${encodeURIComponent(eventType || '')}`)}
                 >
                   View Details
                 </Button>

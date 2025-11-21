@@ -44,15 +44,20 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
                 src={hotel.images && hotel.images[0] ? hotel.images[0] : "/placeholder.svg"}
                 alt={hotel.name}
                 className="object-cover w-full h-full"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/placeholder.svg";
+                }}
               />
             </div>
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-semibold text-lg">{hotel.name}</h3>
-                <div className="flex items-center">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
-                  <span className="text-sm font-medium">{hotel.rating}</span>
-                </div>
+                {hotel.rating > 0 && (
+                  <div className="flex items-center">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                    <span className="text-sm font-medium">{hotel.rating.toFixed(1)}</span>
+                  </div>
+                )}
               </div>
               <div className="flex items-center mb-3">
                 <MapPin className="w-4 h-4 text-gray-400 mr-1" />
@@ -61,7 +66,7 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
               <div className="flex flex-wrap gap-1 mb-4">
                 {(hotel.amenities || []).slice(0, 3).map((amenity, index) => (
                   <span key={index} className="px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded">
-                    <span className="mr-1">{amenity.icon}</span>
+                    {amenity.icon && <span className="mr-1">{amenity.icon}</span>}
                     {amenity.name}
                   </span>
                 ))}

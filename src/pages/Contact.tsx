@@ -11,17 +11,19 @@ import {
   Send,
   CheckCircle 
 } from "lucide-react";
+import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 
 function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
+    phone: "+91 ",
     subject: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -34,24 +36,54 @@ function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
-      });
-    }, 3000);
+    const payload = {
+      fullName: formData.name,
+      email: formData.email,
+      phoneNumber: formData.phone,
+      subject: formData.subject,
+      message: formData.message,
+    };
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URI}${API_ENDPOINTS.CONTACT_SUBMIT}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": import.meta.env.VITE_X_API_KEY,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || result?.status !== "success") {
+        const message =
+          result?.message || "Failed to submit contact form. Please try again.";
+        throw new Error(message);
+      }
+
+      setIsSubmitted(true);
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "+91 ",
+          subject: "",
+          message: "",
+        });
+      }, 3000);
+    } catch (error: any) {
+      setSubmitError(error?.message || "An unexpected error occurred.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -150,6 +182,11 @@ function Contact() {
                     </div>
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
+                      {submitError && (
+                        <div className="p-3 rounded-md bg-red-50 text-red-700 text-sm">
+                          {submitError}
+                        </div>
+                      )}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <Label htmlFor="name" className="text-sm font-medium text-gray-700 mb-2 block">
@@ -257,7 +294,7 @@ function Contact() {
             {/* Map & Additional Info */}
             <div className="space-y-8">
               {/* Map Placeholder */}
-              <div>
+              {/* <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">
                   Find Us
                 </h3>
@@ -270,7 +307,7 @@ function Contact() {
                     </div>
                   </div>
                 </Card>
-              </div>
+              </div> */}
 
               {/* FAQ Section */}
               <div>

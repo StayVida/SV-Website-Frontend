@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Home, Building, Calendar, Info, Phone, LayoutDashboard } from "lucide-react";
+import { Menu, X, Home, Building, Calendar, Info, Phone, User } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthDialog from "@/components/auth/AuthDialog";
-import { Avatar } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const NavBar = () => {
+  const { isAuthenticated, authData, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const { user, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const navigation = [
@@ -57,57 +57,41 @@ const NavBar = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isLoggedIn ? (
-              <>
-                {user?.role !== 'user' && (
-                  <Button 
-                    variant="default" 
-                    size="lg"
-                    className="text-primary bg-background border-primary border-1 hover:text-white"
-                    onClick={() => {
-                      console.log("Navigate to dashboard");
-                      // Add navigation to dashboard here
-                    }}
-                  >
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Dashboard
-                  </Button>
-                )}
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg"
-                >
-                  <Avatar className="h-8 w-8">
-                    <div className="h-full w-full bg-transparent rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium text-sm">
-                        {user?.username.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  </Avatar>
-                </button>
-              </>
-            ) : (
-              <>
-                <Button 
-                  variant="default" 
-                  size="lg" 
-                  className="text-primary bg-background border-primary border-1 hover:text-white"
-                  onClick={() => setIsAuthDialogOpen(true)}
-                >
-                  Get Started
-                </Button>
-                <Button 
-                  variant="default" 
-                  size="lg"
-                  onClick={() => {
-                    // Handle property registration - could be a separate page or dialog
-                    console.log("Navigate to property registration");
-                    // For now, we'll just log it. You can add navigation or another dialog here
-                  }}
-                >
-                  Register Property
-                </Button>
-              </>
+            {
+              !isAuthenticated && (<Button 
+                variant="default" 
+                size="lg" 
+                className="text-primary bg-background border-primary border-1 hover:text-white"
+                onClick={() => setIsAuthDialogOpen(true)}
+              >
+                Get Started
+              </Button>
+              )
+            }
+            
+            <Button 
+              variant="default" 
+              size="lg"
+              onClick={() => {
+                // Handle property registration - could be a separate page or dialog
+                console.log("Navigate to property registration");
+                // For now, we'll just log it. You can add navigation or another dialog here
+              }}
+            >
+              Register Property
+            </Button>
+            {isAuthenticated && (
+              <button
+                onClick={() => navigate("/profile")}
+                className="flex items-center justify-center rounded-full hover:ring-2 hover:ring-green-600 hover:ring-offset-2 transition-all focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+                aria-label="Profile"
+              >
+                <Avatar className="h-10 w-10 cursor-pointer">
+                  <AvatarFallback className="bg-green-600 text-white text-sm font-medium">
+                    {authData?.user.email ? authData.user.email.charAt(0).toUpperCase() : "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
             )}
           </div>
 
@@ -151,38 +135,35 @@ const NavBar = () => {
                 </NavLink>
               ))}
               <div className="flex flex-col space-y-2 px-3 pt-4">
-                {isLoggedIn ? (
-                  <>
-                    {user?.role !== 'user' && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="border-1 border-primary text-primary"
-                        onClick={() => {
-                          console.log("Navigate to dashboard");
-                          setIsMobileMenuOpen(false);
-                        }}
-                      >
-                        <LayoutDashboard className="w-4 h-4 mr-2" />
-                        Dashboard
-                      </Button>
-                    )}
-                    <button
+                {isAuthenticated ? (
+                  <div className="space-y-2">
+                    <div className="px-3 py-2 border-b border-gray-200">
+                      <p className="text-sm font-medium text-gray-900">{authData?.user.email}</p>
+                      <p className="text-xs text-gray-500 mt-1 capitalize">{authData?.user.role}</p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="w-full flex items-center justify-start gap-2"
                       onClick={() => {
-                        navigate('/profile');
+                        navigate("/profile");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg mx-auto"
                     >
-                      <Avatar className="h-8 w-8">
-                        <div className="h-full w-full bg-transparent rounded-full flex items-center justify-center">
-                          <span className="text-white font-medium text-sm">
-                            {user?.username.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      </Avatar>
-                    </button>
-                  </>
+                      <User className="w-4 h-4" />
+                      Profile
+                    </Button>
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Logout
+                    </Button>
+                  </div>
                 ) : (
                   <>
                     <Button 
