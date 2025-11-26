@@ -65,13 +65,23 @@ const NavBar = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="default" 
-              size="lg"
-              onClick={handleRegisterProperty}
-            >
-              Register Property
-            </Button>
+            {isAuthenticated ? (
+              <Button 
+                variant="default" 
+                size="lg"
+                onClick={() => window.location.href = "https://sv-hotel-owner-dashboard.vercel.app/"}
+              >
+                My Dashboard
+              </Button>
+            ) : (
+              <Button 
+                variant="default" 
+                size="lg"
+                onClick={handleRegisterProperty}
+              >
+                Register Property
+              </Button>
+            )}
             
             {isAuthenticated ? (
               <button
@@ -179,16 +189,28 @@ const NavBar = () => {
                     >
                       Get Started
                     </Button>
-                    <Button 
-                      variant="default" 
-                      size="sm"
-                    onClick={() => {
-                      handleRegisterProperty();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    >
-                      Register Property
-                    </Button>
+                    {isAuthenticated ? (
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => {
+                          window.location.href = "https://sv-hotel-owner-dashboard.vercel.app/";
+                        }}
+                      >
+                        My Dashboard
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => {
+                          handleRegisterProperty();
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        Register Property
+                      </Button>
+                    )}
                   </>
                 )}
               </div>
