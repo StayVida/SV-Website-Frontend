@@ -65,18 +65,6 @@ const NavBar = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {
-              !isAuthenticated && (<Button 
-                variant="default" 
-                size="lg" 
-                className="text-primary bg-background border-primary border-1 hover:text-white"
-                onClick={() => setIsAuthDialogOpen(true)}
-              >
-                Get Started
-              </Button>
-              )
-            }
-            
             <Button 
               variant="default" 
               size="lg"
@@ -84,7 +72,8 @@ const NavBar = () => {
             >
               Register Property
             </Button>
-            {isAuthenticated && (
+            
+            {isAuthenticated ? (
               <button
                 onClick={() => navigate("/profile")}
                 className="flex items-center justify-center rounded-full hover:ring-2 hover:ring-green-600 hover:ring-offset-2 transition-all focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
@@ -96,7 +85,16 @@ const NavBar = () => {
                   </AvatarFallback>
                 </Avatar>
               </button>
-            )}
+            ): (<Button 
+                variant="default" 
+                size="lg" 
+                className="text-primary bg-background border-primary border-1 hover:text-white"
+                onClick={() => setIsAuthDialogOpen(true)}
+              >
+                Get Started
+              </Button>
+              )
+            }
           </div>
 
           {/* Mobile menu button */}
