@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Home, Building, Calendar, Info, Phone, User } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -11,6 +11,13 @@ const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const [ownerId, setOwnerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedOwnerId = localStorage.getItem("ownerId");
+    const storedHotelId = localStorage.getItem("hotelId");
+    setOwnerId(storedOwnerId || storedHotelId);
+  }, [isAuthenticated]);
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
@@ -65,7 +72,7 @@ const NavBar = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
+            {ownerId ? (
               <Button 
                 variant="default" 
                 size="lg"
