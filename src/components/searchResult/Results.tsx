@@ -10,7 +10,7 @@ interface Amenity {
 }
 
 interface Hotel {
-  id: number;
+  id: string | number;
   name: string;
   type: string;
   destination: string;

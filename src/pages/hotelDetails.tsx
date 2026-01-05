@@ -12,9 +12,13 @@ import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 
 interface ApiRoom {
   roomId: string;
+  room_NO: number;
   hotelId: number;
   type: string;
   price: number;
+  platformCharges: number;
+  taxPercent: number;
+  stayDuration: number;
   adultsMax: number;
   childrenMax: number;
   bedCount: number;
@@ -26,12 +30,14 @@ interface ApiHotelData {
   hotelId: number;
   name: string;
   description: string;
+  amenities: string[];
   rating: number;
   destination: string;
   onArrivalPayment: boolean;
   images: string[];
   tags: string[];
-  amenities?: string[];
+  countryCode: string | null;
+  phoneNo: string;
   rooms: ApiRoom[];
   forEvent: boolean;
 }

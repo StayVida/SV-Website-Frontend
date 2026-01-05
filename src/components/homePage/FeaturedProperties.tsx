@@ -6,7 +6,7 @@ import { MapPin,Star } from "lucide-react"
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api"
 
 interface Hotel {
-  id: number;
+  id: string;
   name: string;
   type: string;
   destination: string;
@@ -14,7 +14,7 @@ interface Hotel {
   amenities: string[];
   imageUrl: string | null;
   isForEvent: boolean;
-  price: number;
+  "base price": number;
 }
 
 interface ApiResponse {
@@ -77,7 +77,7 @@ function FeaturedProperties() {
     return "/placeholder.svg?height=200&width=300";
   };
 
-  const getHotelLink = (hotelId: number) => {
+  const getHotelLink = (hotelId: string | number) => {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -190,7 +190,7 @@ function FeaturedProperties() {
                     )}
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-2xl font-bold">₹{Math.round(hotel.price)}</span>
+                        <span className="text-2xl font-bold">₹{Math.round(hotel["base price"])}</span>
                         <span className="text-gray-600">/night</span>
                       </div>
                       <Button className="bg-green-600 hover:bg-green-700" asChild>
@@ -244,7 +244,7 @@ function FeaturedProperties() {
                     )}
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-2xl font-bold">₹{Math.round(hotel.price)}</span>
+                        <span className="text-2xl font-bold">₹{Math.round(hotel["base price"])}</span>
                         <span className="text-gray-600">/night</span>
                       </div>
                       <Button className="bg-green-600 hover:bg-green-700" asChild>

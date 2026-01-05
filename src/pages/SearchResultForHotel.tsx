@@ -15,7 +15,7 @@ interface SearchData {
 }
 
 interface ApiHotel {
-  id: number;
+  id: string;
   name: string;
   type: string;
   destination: string;
@@ -23,7 +23,9 @@ interface ApiHotel {
   amenities?: string[]; // Optional as API may not always include it
   imageUrl: string | null;
   isForEvent: boolean;
-  price: number;
+  "base price": number;
+  platformCharges?: number;
+  taxPercent?: number;
 }
 
 interface ApiResponse {
@@ -210,7 +212,7 @@ function SearchResult() {
   // Filter hotels based on sidebar filters
   const filteredHotels = hotels.filter(hotel => {
     // Price filter (one directional: 0 to maxPrice)
-    const price = hotel.price || 0;
+    const price = hotel["base price"] || 0;
     if (price > maxPrice) return false;
     // Hotel type filter
     if (hotelTypes.length > 0 && !hotelTypes.includes(hotel.type)) return false;
@@ -229,7 +231,7 @@ function SearchResult() {
     type: hotel.type,
     destination: hotel.destination,
     rating: hotel.rating,
-    pricePerNight: hotel.price,
+    pricePerNight: hotel["base price"],
     amenities: (hotel.amenities || []).map(amenity => ({ name: amenity, icon: "" })), // Convert string array to amenity objects, handle undefined
     images: hotel.imageUrl ? [hotel.imageUrl] : [],
   }));

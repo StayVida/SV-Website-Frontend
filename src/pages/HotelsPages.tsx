@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Hotel } from "lucide-react";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 import LocationsSkeleton from "@/skeleton/LocationsSkeleton";
+import { LocationCard } from "@/components/homePage/LocationCard";
 
 interface SearchData {
   destination: string;
@@ -17,7 +18,7 @@ interface SearchData {
 
 interface LocationData {
   location: string;
-  lowestPrice: number;
+  lowestPrice: number | null;
   hotelCount: number;
   images: string[];
 }
@@ -150,9 +151,9 @@ function HotelsPages() {
           {!isLoading && !error && cities.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {cities.slice(0, 8).map((city, index) => (
-                <Card 
+                <LocationCard 
                   key={index} 
-                  className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                  city={city}
                   onClick={() => {
                     setSearchData({ ...searchData, destination: city.location });
                     // Auto-fill search and redirect
@@ -164,34 +165,7 @@ function HotelsPages() {
                     const children = encodeURIComponent(searchData.children);
                     navigate(`/search/${destination}/${checkIn}/${checkOut}/${adults}/${children}`);
                   }}
-                >
-                  <div className="relative h-48">
-                    <img
-                      src={city.images?.[0] || "/placeholder.svg"}
-                      alt={city.location}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-opacity"></div>
-                    <div className="absolute top-3 right-3">
-                      <div className="flex items-center bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-sm font-medium text-gray-700">
-                        {city.hotelCount} hotels
-                      </div>
-                    </div>
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-center mb-2">
-                      <MapPin className="w-4 h-4 text-gray-400 mr-2" />
-                      <h3 className="font-semibold text-lg text-gray-900">{city.location}</h3>
-                    </div>
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <Hotel className="w-4 h-4 mr-1" />
-                        <span>{city.hotelCount} hotels</span>
-                      </div>
-                      <span className="font-medium">₹{city.lowestPrice.toLocaleString()}/night</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                />
               ))}
             </div>
           )}
