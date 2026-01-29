@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import BookingSearchForm from "@/components/homePage/BookingSearchForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { MapPin, Hotel } from "lucide-react";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 import LocationsSkeleton from "@/skeleton/LocationsSkeleton";
 import { LocationCard } from "@/components/homePage/LocationCard";
+import { getLocations, type LocationData } from "@/api/hotel";
 
 interface SearchData {
   destination: string;
@@ -16,12 +18,7 @@ interface SearchData {
   children: string;
 }
 
-interface LocationData {
-  location: string;
-  lowestPrice: number | null;
-  hotelCount: number;
-  images: string[];
-}
+
 
 const getDefaultDates = () => {
   const today = new Date();
@@ -60,48 +57,11 @@ function HotelsPages() {
     navigate(`/search/${destination}/${checkIn}/${checkOut}/${adults}/${children}`);
   };
 
-  const [locations, setLocations] = useState<LocationData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchLocations = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `${API_BASE_URI}${API_ENDPOINTS.LOCATIONS_LIST}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": import.meta.env.VITE_X_API_KEY,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch locations");
-        }
-
-        const result = await response.json();
-        const locationsData = Array.isArray(result)
-          ? result
-          : Array.isArray(result?.data)
-          ? result.data
-          : [];
-
-        setLocations(locationsData);
-      } catch (err: any) {
-        setError(err.message || "Unable to load locations");
-        console.error("Error fetching locations:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLocations();
-  }, []);
+  // Fetch locations using react-query
+  const { data: locations = [], isLoading, error } = useQuery({
+    queryKey: ["locations"],
+    queryFn: getLocations,
+  });
 
   const cities = locations;
 
@@ -138,7 +98,7 @@ function HotelsPages() {
 
           {error && (
             <div className="text-center py-4 text-red-600">
-              {error}
+              {error instanceof Error ? error.message : "Unable to load locations"}
             </div>
           )}
 

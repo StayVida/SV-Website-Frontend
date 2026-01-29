@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Hotel, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { normalizeImages } from "@/utils/imageUtils";
+
 interface LocationCardProps {
   city: {
     location: string;
@@ -17,9 +19,7 @@ export function LocationCard({ city, onClick }: LocationCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  const images = city.images && city.images.length > 0 
-    ? city.images 
-    : ["/placeholder.svg"];
+  const images = normalizeImages(city.images);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();

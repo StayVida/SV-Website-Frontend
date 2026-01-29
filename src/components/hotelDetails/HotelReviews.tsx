@@ -18,7 +18,7 @@ interface ReviewsResponse {
 }
 
 interface HotelReviewsProps {
-  hotelId: number;
+  hotelId: string;
 }
 
 export default function HotelReviews({ hotelId }: HotelReviewsProps) {
@@ -160,11 +160,7 @@ export default function HotelReviews({ hotelId }: HotelReviewsProps) {
         )}
       </div>
 
-      {reviews.length === 0 ? (
-        <div className="text-center py-8 bg-gray-50 rounded-lg">
-          <p className="text-gray-600">No reviews yet for this hotel.</p>
-        </div>
-      ) : (
+      {reviews.length === 0 ? null : (
         <div className="space-y-6">
           {reviews.map((review) => (
             <div

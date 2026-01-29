@@ -9,15 +9,20 @@ export interface Room {
   images: string[];
   features: string[];
   price: number;
+  platformCharges?: number;
+  taxRate?: number;
   available: number;
+  stayDuration: number;
+  totalAmount?: number;
 }
 
 export interface Hotel {
-  id: number;
+  id: string;
   name: string;
   type: "Resort" | "Hotel" | "Villa" | "Guest House";
   destination: string;
   rating: number;
+  onArrivalPayment: boolean;
   pricePerNight: number;
   tags: string[];
   amenities: Amenity[];
@@ -25,4 +30,3 @@ export interface Hotel {
   description: string;
   rooms: Room[];
 }
-  

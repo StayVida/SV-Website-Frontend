@@ -21,7 +21,8 @@ interface ApiHotel {
   destination: string;
   rating: number;
   amenities?: string[]; // Optional as API may not always include it
-  imageUrl: string | null;
+  image: string | null;
+  imageUrl?: string | null; // Support both for compatibility
   isForEvent: boolean;
   "base price": number;
   platformCharges?: number;
@@ -233,7 +234,7 @@ function SearchResult() {
     rating: hotel.rating,
     pricePerNight: hotel["base price"],
     amenities: (hotel.amenities || []).map(amenity => ({ name: amenity, icon: "" })), // Convert string array to amenity objects, handle undefined
-    images: hotel.imageUrl ? [hotel.imageUrl] : [],
+    images: hotel.image ? [hotel.image] : (hotel.imageUrl ? [hotel.imageUrl] : []),
   }));
 
   if (isLoading) {

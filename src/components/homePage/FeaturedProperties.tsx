@@ -12,7 +12,7 @@ interface Hotel {
   destination: string;
   rating: number;
   amenities: string[];
-  imageUrl: string | null;
+  image: string | null;
   isForEvent: boolean;
   "base price": number;
 }
@@ -157,7 +157,7 @@ function FeaturedProperties() {
                 >
                   <div className="relative h-40">
                     <img 
-                      src={getImageUrl(hotel.imageUrl)} 
+                      src={getImageUrl(hotel.image)} 
                       alt={hotel.name} 
                       className="object-cover w-full h-full" 
                       onError={(e) => {
@@ -211,7 +211,7 @@ function FeaturedProperties() {
                 <Card key={hotel.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative h-48">
                     <img 
-                      src={getImageUrl(hotel.imageUrl)} 
+                      src={getImageUrl(hotel.image)} 
                       alt={hotel.name} 
                       className="object-cover w-full h-full" 
                       onError={(e) => {

@@ -9,16 +9,22 @@ import RoomList from "@/components/hotelDetails/RoomList";
 import BookingSidebar from "@/components/hotelDetails/BookingSidebar";
 import HotelReviews from "@/components/hotelDetails/HotelReviews";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
+import { normalizeImages, ensureBase64Prefix } from "@/utils/imageUtils";
 
-interface ApiRoom {
+interface ApiRoomInstance {
   roomId: string;
   room_NO: number;
-  hotelId: number;
+}
+
+interface ApiRoomType {
   type: string;
+  rooms: ApiRoomInstance[];
   price: number;
   platformCharges: number;
-  taxPercent: number;
-  stayDuration: number;
+  taxRate: number;
+  advanceRate: number;
+  totalAmount: number;
+  advanceAmount: number;
   adultsMax: number;
   childrenMax: number;
   bedCount: number;
@@ -27,7 +33,7 @@ interface ApiRoom {
 }
 
 interface ApiHotelData {
-  hotelId: number;
+  hotelId: string;
   name: string;
   description: string;
   amenities: string[];
@@ -38,8 +44,8 @@ interface ApiHotelData {
   tags: string[];
   countryCode: string | null;
   phoneNo: string;
-  rooms: ApiRoom[];
-  forEvent: boolean;
+  rooms: ApiRoomType[];
+  forEvent?: boolean;
 }
 
 interface ApiResponse {
@@ -136,40 +142,10 @@ function HotelDetails() {
     }
   };
 
-  // Extract numeric ID from string (handles cases like "event-2" or "8")
-  const extractNumericId = (idStr: string | undefined): number | null => {
-    if (!idStr) return null;
-    
-    // If it's already a number, return it
-    const numericId = parseInt(idStr, 10);
-    if (!isNaN(numericId) && numericId > 0) {
-      return numericId;
-    }
-    
-    // If it's a string like "event-2", try to extract the number
-    const match = idStr.match(/\d+/);
-    if (match) {
-      const extracted = parseInt(match[0], 10);
-      if (!isNaN(extracted) && extracted > 0) {
-        return extracted;
-      }
-    }
-    
-    return null;
-  };
-
   useEffect(() => {
     const fetchHotelDetails = async () => {
       if (!id) {
         setError("Hotel ID is required");
-        setIsLoading(false);
-        return;
-      }
-
-      // Extract numeric ID
-      const numericId = extractNumericId(id);
-      if (!numericId) {
-        setError(`Invalid hotel ID format: "${id}". Hotel ID must be a number.`);
         setIsLoading(false);
         return;
       }
@@ -211,12 +187,12 @@ function HotelDetails() {
           checkOutDate = defaults.checkOut;
         }
 
-        // Build URL with proper encoding using numeric ID
+        // Build URL with proper encoding using the string ID
         const params = new URLSearchParams({
           checkIn: checkInDate,
           checkOut: checkOutDate,
         });
-        const url = `${API_BASE_URI}${API_ENDPOINTS.HOTEL_DETAILS}/${numericId}/rooms?${params.toString()}`;
+        const url = `${API_BASE_URI}${API_ENDPOINTS.HOTEL_DETAILS}/${id}/rooms?${params.toString()}`;
         
         const response = await fetch(url, {
           method: "GET",
@@ -241,10 +217,41 @@ function HotelDetails() {
           throw new Error(errorMessage);
         }
 
+        // Calculate stay duration
+        const parseISODate = (dateStr: string) => {
+          const [year, month, day] = dateStr.split('-').map(Number);
+          return new Date(year, month - 1, day);
+        };
+
+        const startDate = parseISODate(checkInDate);
+        const endDate = parseISODate(checkOutDate);
+        const timeDiff = endDate.getTime() - startDate.getTime();
+        const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        const stayDuration = nights > 0 ? nights : 1;
+
         if (result.status === 200 && result.data) {
           const apiData = result.data;
 
           console.log("apiData from hotelDetails.tsx", apiData);
+
+          // Flatten rooms from types
+          const flatRooms = (apiData.rooms || []).flatMap(roomType => 
+            (roomType.rooms || []).map(instance => ({
+              id: instance.roomId,
+              name: roomType.type,
+              images: normalizeImages(roomType.roomImages),
+              features: roomType.features || [],
+              price: roomType.price,
+              platformCharges: roomType.platformCharges,
+              taxRate: roomType.taxRate,
+              stayDuration: stayDuration, 
+              totalAmount: roomType.totalAmount,
+              adultsMax: roomType.adultsMax,
+              childrenMax: roomType.childrenMax,
+              available: 1,
+            }))
+          );
+
           // Map API response to Hotel type
           const mappedHotel: Hotel = {
             id: apiData.hotelId,
@@ -252,22 +259,16 @@ function HotelDetails() {
             type: apiData.forEvent ? "Resort" : "Hotel", // Default type based on forEvent
             destination: apiData.destination,
             rating: apiData.rating,
-            pricePerNight: apiData.rooms.length > 0 ? apiData.rooms[0].price : 0, // Use first room price or 0
+            pricePerNight: flatRooms.length > 0 ? flatRooms[0].price : 0, 
             tags: apiData.tags || [],
             amenities: (apiData.amenities || []).map((amenity) => ({
               name: amenity,
               icon: "",
             })),
-            images: apiData.images || [],
+            images: normalizeImages(apiData.images),
             description: apiData.description || "",
-            rooms: apiData.rooms.map((room) => ({
-              id: room.roomId,
-              name: room.type,
-              images: room.roomImages || [],
-              features: room.features || [],
-              price: room.price,
-              available: 1, // Default to 1 as API doesn't provide availability
-            })),
+            rooms: flatRooms,
+            onArrivalPayment: apiData.onArrivalPayment
           };
 
           setHotel(mappedHotel);
@@ -321,9 +322,21 @@ function HotelDetails() {
     );
   }
 
+  // Calculate nights for display
+  const displayNights = hotel.rooms.length > 0 ? hotel.rooms[0].stayDuration : 1;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <ImageGallery hotel={hotel} />
+
+      <div className="mb-4 flex items-center gap-2">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+          Stay: {displayNights} {displayNights === 1 ? 'Night' : 'Nights'}
+        </span>
+        <span className="text-gray-500 text-sm">
+          ({checkIn} - {checkOut})
+        </span>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Home, Building, Calendar, Info, Phone, User } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { href, NavLink, useNavigate } from "react-router-dom";
 import AuthDialog from "@/components/auth/AuthDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
