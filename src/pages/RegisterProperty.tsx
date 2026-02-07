@@ -7,13 +7,16 @@ import {
   type ImagePreview,
   type EventPackage,
   type RoomForm,
-  type Amenity,
-  type Tag,
-  type Feature,
 } from "@/components/register-property/types";
 import { BasicDetailsForm } from "@/components/register-property/BasicDetailsForm";
 import { EventDetailsForm } from "@/components/register-property/EventDetailsForm";
 import { RoomDetailsForm } from "@/components/register-property/RoomDetailsForm";
+import { API_ENDPOINTS, DASHBOARD_URL } from "@/config/api";
+import { 
+  useRegisterHotel, 
+  useAddEventPackage, 
+  useRegisterRoom 
+} from "@/hooks/useLookups";
 
 const generateId = () => Math.random().toString(36).slice(2, 11);
 
@@ -26,6 +29,7 @@ const createRoom = (): RoomForm => ({
   bedCount: "",
   price: "",
   images: [],
+  roomNumber: "",
 });
 
 const createEventPackage = (): EventPackage => ({
@@ -54,51 +58,10 @@ const RegisterProperty = () => {
   const [eventPackages, setEventPackages] = useState<EventPackage[]>([]);
   const [rooms, setRooms] = useState<RoomForm[]>([createRoom()]);
 
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [availableAmenities, setAvailableAmenities] = useState<string[]>([]);
-  const [availableFeatures, setAvailableFeatures] = useState<string[]>([]);
 
   const propertyImagesRef = useRef<ImagePreview[]>([]);
   const roomImagesRef = useRef<RoomForm[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [amenitiesRes, tagsRes, featuresRes] = await Promise.all([
-          apiClient.get<Amenity[]>("/lookup/amenities"),
-          apiClient.get<Tag[]>("/lookup/tags"),
-          apiClient.get<Feature[]>("/lookup/features"),
-        ]);
-
-        if (amenitiesRes.data) {
-          setAvailableAmenities(
-            amenitiesRes.data
-              .filter((item) => item.status === "enable")
-              .map((item) => item.name)
-          );
-        }
-
-        if (tagsRes.data) {
-          setAvailableTags(
-            tagsRes.data
-              .filter((item) => item.status === "enable")
-              .map((item) => item.name)
-          );
-        }
-
-        if (featuresRes.data) {
-          const features = featuresRes.data
-            .filter((item) => item.status === "enable")
-            .flatMap((item) => item.name.split(",")); // Handle comma-separated names
-          setAvailableFeatures(Array.from(new Set(features))); // Remove duplicates
-        }
-      } catch (error) {
-        console.error("Error fetching lookup data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -256,25 +219,22 @@ const RegisterProperty = () => {
     };
   }, []);
 
+  const registerRoomMutation = useRegisterRoom();
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Get hotelId from localStorage
       const hotelId = localStorage.getItem("hotelId");
-      
       if (!hotelId) {
         alert("Hotel ID not found. Please complete Step 1 first.");
         setIsSubmitting(false);
         return;
       }
 
-      // Save each room with images
       const roomPromises = rooms.map(async (room) => {
         const formData = new FormData();
-        
-        // Append room data
         formData.append("hotelId", hotelId);
         formData.append("roomType", room.roomType);
         formData.append("features", JSON.stringify(room.features));
@@ -282,25 +242,19 @@ const RegisterProperty = () => {
         formData.append("maxChildren", room.maxChildren || "0");
         formData.append("bedCount", room.bedCount || "0");
         formData.append("price", room.price || "0");
+        formData.append("roomNumber", room.roomNumber || "0");
         
-        // Append room images
         room.images.forEach((image) => {
           if (image.file) {
             formData.append("images", image.file);
           }
         });
 
-        return apiClient.post("/api/hotels/register_room_with_images", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        return registerRoomMutation.mutateAsync(formData);
       });
 
       await Promise.all(roomPromises);
-      
-      // Redirect to dashboard after successful registration
-      window.location.href = "https://sv-hotel-owner-dashboard.vercel.app/";
+      window.location.href = DASHBOARD_URL;
     } catch (error) {
       console.error("Error registering rooms:", error);
       alert("Failed to register rooms. Please try again.");
@@ -328,16 +282,16 @@ const RegisterProperty = () => {
   const isStep2Valid = hasEventDetails;
   const isStep3Valid = hasValidRooms;
 
+  const registerHotelMutation = useRegisterHotel();
+  const addEventPackageMutation = useAddEventPackage();
+
   const handleNext = async () => {
     if (currentStep === 1 && isStep1Valid) {
       try {
         setIsSubmitting(true);
 
-        // Create FormData for multipart/form-data request
         const formData = new FormData();
-
-        // Get owner_ID from authData in localStorage
-        let ownerId; // Default fallback
+        let ownerId;
         try {
           const authData = localStorage.getItem("authData");
           if (authData) {
@@ -348,7 +302,6 @@ const RegisterProperty = () => {
           console.error("Error parsing authData:", error);
         }
 
-        // Prepare the data object
         const data = {
           owner_ID: ownerId,
           name,
@@ -357,35 +310,26 @@ const RegisterProperty = () => {
           isForEvent: provideEvents,
           description,
           phone_NO: phoneNumber,
+          country_code: countryCode,
           tags: selectedTags,
           amenities: selectedAmenities,
           longitude: longitude.toString(),
           latitude: latitude.toString(),
         };
 
-        // Append data as JSON string
         formData.append("data", JSON.stringify(data));
-
-        // Append image files
         images.forEach((image) => {
           if (image.file) {
             formData.append("image", image.file);
           }
         });
 
-        // Make API call
-        const response = await apiClient.post("/api/hotels/register", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await registerHotelMutation.mutateAsync(formData);
 
-        // Save hotelId to localStorage
-        if (response.data?.data?.hotelId) {
-          localStorage.setItem("hotelId", response.data.data.hotelId.toString());
+        if (response?.data?.hotelId) {
+          localStorage.setItem("hotelId", response.data.hotelId.toString());
         }
 
-        // Navigate to next step
         if (provideEvents) {
           setCurrentStep(2);
         } else {
@@ -400,16 +344,12 @@ const RegisterProperty = () => {
     } else if (currentStep === 2 && isStep2Valid) {
       try {
         setIsSubmitting(true);
-        
-        // Get hotelId from localStorage
         const hotelId = localStorage.getItem("hotelId");
-        
         if (!hotelId) {
           alert("Hotel ID not found. Please complete Step 1 first.");
           return;
         }
 
-        // Save each event package
         const savePromises = eventPackages.map((pkg) => {
           const eventData = {
             eventType: pkg.eventType,
@@ -418,12 +358,10 @@ const RegisterProperty = () => {
             guestCount: Number(pkg.guestCount) || 0,
             amenities: pkg.amenities,
           };
-          return apiClient.post("/api/events/add", eventData);
+          return addEventPackageMutation.mutateAsync(eventData);
         });
 
         await Promise.all(savePromises);
-        
-        // Navigate to Room Details
         setCurrentStep(3);
       } catch (error) {
         console.error("Error saving event details:", error);
@@ -517,8 +455,6 @@ const RegisterProperty = () => {
               mapSrc={mapSrc}
               provideEvents={provideEvents}
               handleProvideEventsToggle={handleProvideEventsToggle}
-              tagsOptions={availableTags}
-              amenitiesOptions={availableAmenities}
             />
           )}
 
@@ -529,7 +465,6 @@ const RegisterProperty = () => {
               removeEventPackage={removeEventPackage}
               updateEventPackageField={updateEventPackageField}
               updateEventPackageAmenities={updateEventPackageAmenities}
-              amenitiesOptions={availableAmenities}
             />
           )}
 
@@ -543,7 +478,6 @@ const RegisterProperty = () => {
               handleRoomImageUpload={handleRoomImageUpload}
               removeRoomImage={removeRoomImage}
               provideEvents={provideEvents}
-              featureOptions={availableFeatures}
             />
           )}
 

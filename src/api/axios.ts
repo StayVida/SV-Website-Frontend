@@ -11,7 +11,7 @@ import XApiKey from '@/config/XApiKey';
 // Create axios instance with base configuration
 const apiClient: AxiosInstance = axios.create({
   baseURL: BaseUrl,
-//   timeout: 10000, // 10 seconds timeout
+  //   timeout: 10000, // 10 seconds timeout
   headers: {
     'Content-Type': 'application/json',
     'X-Api-Key': XApiKey,
@@ -22,10 +22,45 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     // Add authentication token if available
-    const token = localStorage.getItem('token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    let token = localStorage.getItem('token');
+
+    // Fallback to authData if token is not found directly
+    if (!token || token === 'null' || token === 'undefined') {
+      const authData = localStorage.getItem('authData');
+      if (authData) {
+        try {
+          const parsed = JSON.parse(authData);
+          // Check various possible keys for the token
+          token = parsed.token || parsed.auth_token || parsed.accessToken || parsed.access_token;
+        } catch (e) {
+          console.error('Error parsing authData in axios interceptor:', e);
+        }
+      }
     }
+
+    // Clean up the token string (remove possible extra quotes and whitespace)
+    if (typeof token === 'string') {
+      token = token.trim();
+      if (token.startsWith('"') && token.endsWith('"')) {
+        token = token.slice(1, -1);
+      }
+    }
+
+    // Ensure we have a valid token before adding the header
+    if (token && token !== 'null' && token !== 'undefined' && token !== '' && config.headers) {
+      // Ensure we don't double up the Bearer prefix
+      const actualToken = token.startsWith('Bearer ') ? token.slice(7).trim() : token;
+      config.headers.Authorization = `Bearer ${actualToken}`;
+    }
+
+    // Normalize X-Api-Key to ensure compatibility (some servers prefer lowercase)
+    if (config.headers) {
+      if (!config.headers['x-api-key'] && !config.headers['X-Api-Key']) {
+        config.headers['x-api-key'] = XApiKey;
+      }
+    }
+    // console.log("token",token)
+
     return config;
   },
   (error: AxiosError): Promise<AxiosError> => {
@@ -45,6 +80,8 @@ apiClient.interceptors.response.use(
       console.error('Unauthorized access - Token may be expired or invalid');
       // Clear invalid token
       localStorage.removeItem('token');
+      localStorage.removeItem('authData');
+      localStorage.removeItem('user');
       // You can redirect to login page here
       // window.location.href = '/login';
     } else if (error.response?.status === 403) {
@@ -58,7 +95,7 @@ apiClient.interceptors.response.use(
     } else if (!error.response) {
       console.error('Network error - Please check your internet connection');
     }
-    
+
     return Promise.reject(error);
   }
 );

@@ -1,6 +1,7 @@
 // API Configuration
 // Set VITE_API_BASE_URI in your .env file (e.g., VITE_API_BASE_URI=http://localhost:3000/api)
 export const API_BASE_URI = import.meta.env.VITE_BASE_URL || "http://localhost:3000/api";
+export const DASHBOARD_URL = import.meta.env.VITE_DASHBOARD_URL || "https://sv-hotel-owner-dashboard.vercel.app/";
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -15,5 +16,8 @@ export const API_ENDPOINTS = {
   EVENTS_LIST: "/api/events/list",
   CONTACT_SUBMIT: "/api/contact/submit",
   CREATE_BOOKING: "/api/bookings/book",
+  LOOKUP_AMENITIES: "/lookup/amenities",
+  LOOKUP_FEATURES: "/lookup/features",
+  LOOKUP_TAGS: "/lookup/tags",
 };
 

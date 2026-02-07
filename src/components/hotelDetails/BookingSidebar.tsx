@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export default function BookingSidebar({
   const [checkOutDate, setCheckOutDate] = useState<string>(checkOut || "");
   const [guestName, setGuestName] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<string>("Local");
+  const [paymentMethod, setPaymentMethod] = useState<string>(hotel.onArrivalPayment ? "Local" : "Online");
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -109,6 +109,13 @@ export default function BookingSidebar({
       setIsBooking(false);
     }
   };
+
+  // Update payment method if hotel config changes
+  useEffect(() => {
+    if (!hotel.onArrivalPayment && paymentMethod === "Local") {
+      setPaymentMethod("Online");
+    }
+  }, [hotel.onArrivalPayment]);
 
   return (
     <div className="lg:col-span-1">
@@ -243,31 +250,41 @@ export default function BookingSidebar({
             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
+                disabled={!hotel.onArrivalPayment}
                 onClick={() => setPaymentMethod("Local")}
                 className={cn(
-                  "flex flex-col items-center justify-between rounded-md border-2 p-4 transition-all",
+                  "flex flex-col items-center justify-between rounded-md border-2 p-4 transition-all w-full",
                   paymentMethod === "Local"
                     ? "border-green-600 bg-green-50 text-green-700"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    : !hotel.onArrivalPayment 
+                      ? "border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed opacity-60"
+                      : "border-gray-200 bg-white hover:border-gray-300 text-gray-700"
                 )}
               >
-                <Banknote className={cn("mb-3 h-6 w-6", paymentMethod === "Local" ? "text-green-600" : "text-gray-400")} />
+                <Banknote className={cn("mb-3 h-6 w-6", 
+                  paymentMethod === "Local" ? "text-green-600" : !hotel.onArrivalPayment ? "text-gray-300" : "text-gray-800"
+                )} />
                 <span className="text-sm font-medium">Pay at Hotel</span>
               </button>
               <button
                 type="button"
                 onClick={() => setPaymentMethod("Online")}
                 className={cn(
-                  "flex flex-col items-center justify-between rounded-md border-2 p-4 transition-all",
+                  "flex flex-col items-center justify-between rounded-md border-2 p-4 transition-all w-full",
                   paymentMethod === "Online"
                     ? "border-green-600 bg-green-50 text-green-700"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    : "border-gray-200 bg-white hover:border-gray-300 text-gray-700"
                 )}
               >
-                <CreditCard className={cn("mb-3 h-6 w-6", paymentMethod === "Online" ? "text-green-600" : "text-gray-400")} />
+                <CreditCard className={cn("mb-3 h-6 w-6", 
+                  paymentMethod === "Online" ? "text-green-600" : "text-gray-800"
+                )} />
                 <span className="text-sm font-medium">Pay Online</span>
               </button>
             </div>
+            {!hotel.onArrivalPayment && (
+              <p className="text-xs text-gray-500 italic">"Pay at Hotel" is not available for this property.</p>
+            )}
           </div>
 
           {bookingError && (

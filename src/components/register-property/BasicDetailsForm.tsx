@@ -37,9 +37,9 @@ interface BasicDetailsFormProps {
   mapSrc: string;
   provideEvents: boolean;
   handleProvideEventsToggle: () => void;
-  tagsOptions: string[];
-  amenitiesOptions: string[];
 }
+
+import { useTags, useAmenities, useLocations } from "@/hooks/useLookups";
 
 export const BasicDetailsForm = ({
   name,
@@ -69,9 +69,13 @@ export const BasicDetailsForm = ({
   mapSrc,
   provideEvents,
   handleProvideEventsToggle,
-  tagsOptions,
-  amenitiesOptions,
 }: BasicDetailsFormProps) => {
+  const { data: tagsOptions = [] } = useTags();
+  const { data: amenitiesOptions = [] } = useAmenities();
+  const { data: locationsData = [] } = useLocations();
+
+  const destinationOptions = Array.from(new Set(locationsData.map((l: any) => l.location)));
+
   return (
     <>
       <Card className="border-none shadow-lg">
@@ -157,12 +161,18 @@ export const BasicDetailsForm = ({
               </Label>
               <Input
                 id="destination"
+                list="destinations-list"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder="e.g. Mumbai"
                 required
                 className="mt-2 h-12"
               />
+              <datalist id="destinations-list">
+                {destinationOptions.map((option) => (
+                  <option key={option} value={option} />
+                ))}
+              </datalist>
             </div>
             <div>
               <Label htmlFor="description" className="text-sm text-gray-700 font-medium">

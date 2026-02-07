@@ -15,8 +15,9 @@ interface RoomDetailsFormProps {
   handleRoomImageUpload: (id: string, event: React.ChangeEvent<HTMLInputElement>) => void;
   removeRoomImage: (roomId: string, imageId: string) => void;
   provideEvents: boolean;
-  featureOptions: string[];
 }
+
+import { useAmenities, useTags, useFeatures } from "@/hooks/useLookups";
 
 export const RoomDetailsForm = ({
   rooms,
@@ -27,8 +28,8 @@ export const RoomDetailsForm = ({
   handleRoomImageUpload,
   removeRoomImage,
   provideEvents,
-  featureOptions,
 }: RoomDetailsFormProps) => {
+  const { data: featureOptions = [] } = useFeatures();
   return (
     <Card className="border-none shadow-lg">
       <CardContent className="p-6 space-y-6">
@@ -77,8 +78,18 @@ export const RoomDetailsForm = ({
                   />
                 </div>
                 <div>
+                  <Label className="text-sm text-gray-700 font-medium">Room Number *</Label>
+                  <Input
+                    value={room.roomNumber}
+                    onChange={(e) => updateRoomField(room.id, "roomNumber", e.target.value)}
+                    placeholder="e.g. 101"
+                    required
+                    className="mt-2 h-12"
+                  />
+                </div>
+                <div>
                   <Label className="text-sm text-gray-700 font-medium">
-                    Nightly Price (₹) *
+                    Nightly Price (₹)(With GST) *
                   </Label>
                   <Input
                     type="number"
@@ -125,13 +136,15 @@ export const RoomDetailsForm = ({
                 </div>
               </div>
 
-              <MultiSelectField
-                label="Features"
-                placeholder="Select room features"
-                options={featureOptions}
-                selected={room.features}
-                onChange={(values) => updateRoomFeatures(room.id, values)}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <MultiSelectField
+                  label="Features"
+                  placeholder="Select room features"
+                  options={featureOptions}
+                  selected={room.features}
+                  onChange={(values) => updateRoomFeatures(room.id, values)}
+                />
+              </div>
 
               <div className="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                 <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />

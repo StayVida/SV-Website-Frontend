@@ -18,7 +18,7 @@ interface ApiRoomInstance {
 
 interface ApiRoomType {
   type: string;
-  rooms: ApiRoomInstance[];
+  rooms?: ApiRoomInstance[];
   price: number;
   platformCharges: number;
   taxRate: number;
@@ -234,23 +234,41 @@ function HotelDetails() {
 
           console.log("apiData from hotelDetails.tsx", apiData);
 
-          // Flatten rooms from types
-          const flatRooms = (apiData.rooms || []).flatMap(roomType => 
-            (roomType.rooms || []).map(instance => ({
-              id: instance.roomId,
-              name: roomType.type,
-              images: normalizeImages(roomType.roomImages),
-              features: roomType.features || [],
-              price: roomType.price,
-              platformCharges: roomType.platformCharges,
-              taxRate: roomType.taxRate,
-              stayDuration: stayDuration, 
-              totalAmount: roomType.totalAmount,
-              adultsMax: roomType.adultsMax,
-              childrenMax: roomType.childrenMax,
-              available: 1,
-            }))
-          );
+          // Flatten rooms from types, handling both nested instances and flat structure
+          const flatRooms = (apiData.rooms || []).flatMap((roomType, index) => {
+            if (roomType.rooms && roomType.rooms.length > 0) {
+              return roomType.rooms.map(instance => ({
+                id: instance.roomId,
+                name: roomType.type,
+                images: normalizeImages(roomType.roomImages),
+                features: roomType.features || [],
+                price: roomType.price,
+                platformCharges: roomType.platformCharges,
+                taxRate: roomType.taxRate,
+                stayDuration: stayDuration, 
+                totalAmount: roomType.totalAmount,
+                adultsMax: roomType.adultsMax,
+                childrenMax: roomType.childrenMax,
+                available: 1,
+              }));
+            } else {
+              // Flat structure where room types are returned directly (as per user's JSON)
+              return [{
+                id: `${apiData.hotelId}_type_${index}`,
+                name: roomType.type,
+                images: normalizeImages(roomType.roomImages),
+                features: roomType.features || [],
+                price: roomType.price,
+                platformCharges: roomType.platformCharges,
+                taxRate: roomType.taxRate,
+                stayDuration: stayDuration, 
+                totalAmount: roomType.totalAmount,
+                adultsMax: roomType.adultsMax,
+                childrenMax: roomType.childrenMax,
+                available: 1,
+              }];
+            }
+          });
 
           // Map API response to Hotel type
           const mappedHotel: Hotel = {

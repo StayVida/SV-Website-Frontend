@@ -16,8 +16,9 @@ interface EventDetailsFormProps {
   removeEventPackage: (id: string) => void;
   updateEventPackageField: (id: string, field: "eventType" | "amount" | "guestCount", value: string) => void;
   updateEventPackageAmenities: (id: string, amenities: string[]) => void;
-  amenitiesOptions: string[];
 }
+
+import { useAmenities } from "@/hooks/useLookups";
 
 export const EventDetailsForm = ({
   eventPackages,
@@ -25,8 +26,8 @@ export const EventDetailsForm = ({
   removeEventPackage,
   updateEventPackageField,
   updateEventPackageAmenities,
-  amenitiesOptions,
 }: EventDetailsFormProps) => {
+  const { data: amenitiesOptions = [] } = useAmenities();
   return (
     <Card className="border-none shadow-lg">
       <CardContent className="p-6 space-y-6">
