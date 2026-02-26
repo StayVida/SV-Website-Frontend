@@ -13,6 +13,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import ProfilePage from "./pages/Profile";
 import RegisterProperty from "./pages/RegisterProperty";
+import BookingDetails from "./pages/BookingDetails";
 
 function ScrollToTop() {
   const location = useLocation();
@@ -40,6 +41,7 @@ function AppRoutes() {
           <Route path="/search/:destination/:checkIn/:checkOut/:adults/:children" element={<SearchResult />} />
           <Route path="/events/search" element={<SearchResultForEvent />} />
           <Route path="/hotel/:id/:checkIn/:checkOut/:adults/:children" element={<HotelDetails />} />
+          <Route path="/booking/:id" element={<BookingDetails />} />
           <Route path="*" element={<PageNotFound />} />
         </Route>
       </Routes>

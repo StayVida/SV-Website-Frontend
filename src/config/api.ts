@@ -15,7 +15,12 @@ export const API_ENDPOINTS = {
   LOCATIONS_LIST: "/api/locations/list",
   EVENTS_LIST: "/api/events/list",
   CONTACT_SUBMIT: "/api/contact/submit",
-  CREATE_BOOKING: "/api/bookings/book",
+  CREATE_BOOKING: "/api/bookings/book", // Keep for backward compatibility if needed, or remove if replaced
+  LOCK_ROOM: "/booking/lock-room",
+  CONFIRM_BOOKING: "/booking/create",
+  RAZORPAY_ORDER: "/api/payments/razorpay/order",
+  RAZORPAY_VERIFY: "/api/payments/razorpay/verify",
+  GET_BOOKING_DETAILS: "/api/profile/:bookingId/details",
   LOOKUP_AMENITIES: "/lookup/amenities",
   LOOKUP_FEATURES: "/lookup/features",
   LOOKUP_TAGS: "/lookup/tags",
