@@ -1,83 +1,40 @@
-import { useState, useEffect } from "react";
-import { Star, User } from "lucide-react";
-import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
-
-interface Review {
-  rating_ID: number;
-  user_ID: number;
-  hotel_ID: number;
-  booking_ID: string;
-  rating_Value: number;
-  comment: string;
-  rated_at: string;
-}
-
-interface ReviewsResponse {
-  ratings: Review[];
-  averageRating: number;
-}
+import { useQuery } from "@tanstack/react-query";
+import { Star, User, ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
+import { getHotelRatings } from "@/api/hotel";
+import { useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface HotelReviewsProps {
   hotelId: string;
 }
 
 export default function HotelReviews({ hotelId }: HotelReviewsProps) {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [averageRating, setAverageRating] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      setIsLoading(true);
-      setError(null);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["hotelRatings", hotelId],
+    queryFn: () => getHotelRatings(hotelId),
+    enabled: !!hotelId,
+  });
 
-      try {
-        const response = await fetch(
-          `${API_BASE_URI}${API_ENDPOINTS.HOTEL_REVIEWS}/${hotelId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": import.meta.env.VITE_X_API_KEY,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch reviews");
-        }
-
-        const result: ReviewsResponse = await response.json();
-
-        if (result.ratings && Array.isArray(result.ratings)) {
-          setReviews(result.ratings);
-          setAverageRating(result.averageRating || 0);
-        } else {
-          setReviews([]);
-          setAverageRating(0);
-        }
-      } catch (err: any) {
-        setError(err.message || "An error occurred while fetching reviews");
-        setReviews([]);
-        setAverageRating(0);
-        console.error("Error fetching reviews:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (hotelId) {
-      fetchReviews();
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 400;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
     }
-  }, [hotelId]);
+  };
 
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString("en-US", {
+      return date.toLocaleDateString("en-IN", {
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric",
       });
     } catch {
@@ -86,118 +43,133 @@ export default function HotelReviews({ hotelId }: HotelReviewsProps) {
   };
 
   const renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-
     return (
-      <div className="flex items-center">
+      <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-4 h-4 ${
-              star <= fullStars
-                ? "fill-yellow-400 text-yellow-400"
-                : star === fullStars + 1 && hasHalfStar
-                ? "fill-yellow-400 text-yellow-400 fill-opacity-50"
-                : "text-gray-300"
-            }`}
+            className={`w-4 h-4 ${star <= Math.floor(rating)
+              ? "fill-yellow-400 text-yellow-400"
+              : "text-gray-200"
+              }`}
           />
         ))}
-        <span className="ml-2 text-sm font-medium text-gray-700">
-          {rating.toFixed(1)}
-        </span>
       </div>
     );
   };
 
   if (isLoading) {
     return (
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Reviews</h2>
-        <div className="text-center py-8">
-          <p className="text-gray-600">Loading reviews...</p>
+      <div className="space-y-6 py-8">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-8 w-24" />
+        </div>
+        <div className="flex gap-4 overflow-hidden">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-48 min-w-[350px] rounded-xl" />
+          ))}
         </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !data) {
+    return null; // Or show a silent error
+  }
+
+  const reviews = data.ratings || [];
+  const averageRating = data.averageRating || (reviews.length > 0 ? reviews.reduce((acc, r) => acc + r.rating_Value, 0) / reviews.length : 0);
+
+  if (reviews.length === 0) {
     return (
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Reviews</h2>
-        <div className="text-center py-8">
-          <p className="text-red-600">{error}</p>
-        </div>
-      </div>
+      <Card className="bg-gray-50/50 border-dashed border-2 py-12">
+        <CardContent className="flex flex-col items-center justify-center gap-3">
+          <MessageSquare className="w-12 h-12 text-gray-300" />
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-gray-900">No reviews yet</h3>
+            <p className="text-gray-500">Be the first to share your experience!</p>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Reviews</h2>
-        {averageRating > 0 && (
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`w-5 h-5 ${
-                    star <= Math.floor(averageRating)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-lg font-semibold text-gray-900">
+    <div className="space-y-6 py-8 border-t border-gray-100">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Guest Reviews</h2>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="bg-green-600 text-white px-2 py-0.5 rounded text-sm font-bold">
               {averageRating.toFixed(1)}
-            </span>
-            <span className="text-gray-600">
-              ({reviews.length} {reviews.length === 1 ? "review" : "reviews"})
-            </span>
+            </div>
+            <span className="text-sm font-medium text-gray-700">Excellent</span>
+            <span className="text-sm text-gray-500">• {reviews.length} reviews</span>
           </div>
-        )}
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => scroll("left")}
+            className="rounded-full hover:bg-white hover:shadow-md transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => scroll("right")}
+            className="rounded-full hover:bg-white hover:shadow-md transition-all"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
-      {reviews.length === 0 ? null : (
-        <div className="space-y-6">
-          {reviews.map((review) => (
-            <div
-              key={review.rating_ID}
-              className="bg-gray-50 rounded-lg p-6 border border-gray-200"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-white" />
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {reviews.map((review) => (
+          <Card
+            key={review.rating_ID}
+            className="min-w-[320px] md:min-w-[400px] snap-start hover:shadow-lg transition-shadow duration-300 border-gray-100"
+          >
+            <CardContent className="p-6 space-y-4">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 font-bold overflow-hidden uppercase">
+                    {review.user_Name ? review.user_Name.charAt(0) : <User className="w-5 h-5" />}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
-                      User #{review.user_ID}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {formatDate(review.rated_at)}
-                    </p>
+                    <h4 className="font-semibold text-gray-900">{review.user_Name || `User #${review.user_ID}`}</h4>
+                    <p className="text-xs text-gray-500">{formatDate(review.rated_at)}</p>
                   </div>
                 </div>
                 {renderStars(review.rating_Value)}
               </div>
-              {review.comment && (
-                <p className="text-gray-700 mt-3 leading-relaxed">
-                  {review.comment}
+
+              <div className="relative">
+                <span className="text-4xl text-blue-100 absolute -top-4 -left-2 font-serif">"</span>
+                <p className="text-gray-700 leading-relaxed relative z-10 italic">
+                  {review.comment || "Great experience, highly recommended!"}
                 </p>
-              )}
+              </div>
+
               {review.booking_ID && (
-                <p className="text-xs text-gray-500 mt-3">
-                  Booking: {review.booking_ID}
-                </p>
+                <div className="pt-4 border-t border-gray-50 flex items-center justify-between text-[10px] text-gray-400">
+                  <span className="uppercase tracking-wider">Verified Booking</span>
+                  <span className="font-mono">{review.booking_ID}</span>
+                </div>
               )}
-            </div>
-          ))}
-        </div>
-      )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
-

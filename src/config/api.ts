@@ -24,5 +24,6 @@ export const API_ENDPOINTS = {
   LOOKUP_AMENITIES: "/lookup/amenities",
   LOOKUP_FEATURES: "/lookup/features",
   LOOKUP_TAGS: "/lookup/tags",
+  CREATE_RATING: "/api/rating/create",
 };
 
