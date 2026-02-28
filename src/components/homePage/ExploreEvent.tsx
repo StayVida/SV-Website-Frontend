@@ -1,5 +1,10 @@
 import { Card } from "@/components/ui/card";
 import { Heart, Calendar, Building, Users, Star } from "lucide-react";
+import weddingImg from "@/assets/wedding.jpeg";
+import birthdayImg from "@/assets/birthday_event.jpeg";
+import corporateImg from "@/assets/corprate_event.jpeg";
+import privateImg from "@/assets/private_event.jpeg";
+import engagementImg from "@/assets/engagement_event.jpeg";
 
 function ExploreEvent() {
   return (
@@ -15,7 +20,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src="/placeholder.svg?height=200&width=200"
+                src={weddingImg}
                 alt="Weddings"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
               />
@@ -30,7 +35,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src="/placeholder.svg?height=200&width=200"
+                src={birthdayImg}
                 alt="Birthdays"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110 "
               />
@@ -45,7 +50,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src="/placeholder.svg?height=200&width=200"
+                src={corporateImg}
                 alt="Corporate Events"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
               />
@@ -60,7 +65,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src="/placeholder.svg?height=200&width=200"
+                src={privateImg}
                 alt="Private Parties"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
               />
@@ -75,7 +80,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src="/placeholder.svg?height=200&width=200"
+                src={engagementImg}
                 alt="Engagements"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
               />

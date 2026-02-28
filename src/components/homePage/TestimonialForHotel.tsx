@@ -1,34 +1,29 @@
 import { useState, useEffect } from "react";
 import { Star } from "lucide-react"
 import { Card, CardContent, } from "@/components/ui/card"
-import { Avatar,AvatarImage,AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { useQuery } from "@tanstack/react-query";
+import { getHotelRatings } from "@/api/hotel";
 
 function TestimonialForHotel() {
-  const testimonials = [
-    {
-      name: "Sarah M.",
-      location: "Bali Trip",
-      review: "Amazing experience! The hotel was perfect and the local guide was very helpful.",
-    },
-    {
-      name: "John D.",
-      location: "Business Trip",
-      review: "Best booking platform ever. Everything was seamless from start to finish.",
-    },
-    {
-      name: "Lisa K.",
-      location: "Family Vacation",
-      review: "Highly recommend StayVida. Great service and amazing properties.",
-    },
-  ];
+  const { data, isLoading } = useQuery({
+    queryKey: ["homepageTestimonials"],
+    queryFn: () => getHotelRatings(),
+  });
+
+  const testimonials = data?.ratings || [];
 
   const [current, setCurrent] = useState(0);
+
   useEffect(() => {
+    if (testimonials.length <= 1) return;
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % testimonials.length);
     }, 4000);
     return () => clearInterval(interval);
   }, [testimonials.length]);
+
+  if (isLoading || !testimonials || testimonials.length === 0) return null;
 
   return (
     <section className="py-12 lg:py-20">
@@ -62,23 +57,22 @@ function TestimonialForHotel() {
                         <Avatar className="w-10 h-10">
                           <AvatarImage src="/placeholder.svg?height=40&width=40" />
                           <AvatarFallback>
-                            {testimonial.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
+                            {testimonial.user_Name
+                              ? testimonial.user_Name.split(" ").map((n) => n[0]).join("")
+                              : "U"}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <h4 className="font-semibold text-sm">{testimonial.name}</h4>
-                          <p className="text-xs text-gray-600">{testimonial.location}</p>
+                          <h4 className="font-semibold text-sm">{testimonial.user_Name || `User #${testimonial.user_ID}`}</h4>
+                          <p className="text-xs text-gray-600">Verified Booking</p>
                         </div>
                       </div>
                       <div className="flex items-center mb-2">
                         {[1, 2, 3, 4, 5].map((star) => (
-                          <Star key={star} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          <Star key={star} className={`w-4 h-4 ${star <= Math.floor(testimonial.rating_Value) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} />
                         ))}
                       </div>
-                      <p className="text-sm text-gray-700">{testimonial.review}</p>
+                      <p className="text-sm text-gray-700">{testimonial.comment || "Amazing experience!"}</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -100,30 +94,29 @@ function TestimonialForHotel() {
 
         {/* Grid for desktop */}
         <div className="hidden lg:grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.slice(0, 3).map((testimonial, index) => (
             <Card key={index} className="p-4 lg:p-6">
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <Avatar className="w-12 h-12">
                     <AvatarImage src="/placeholder.svg?height=40&width=40" />
                     <AvatarFallback>
-                      {testimonial.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      {testimonial.user_Name
+                        ? testimonial.user_Name.split(" ").map((n) => n[0]).join("")
+                        : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h4 className="font-semibold text-base">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-600">{testimonial.location}</p>
+                    <h4 className="font-semibold text-base">{testimonial.user_Name || `User #${testimonial.user_ID}`}</h4>
+                    <p className="text-sm text-gray-600">Verified Booking</p>
                   </div>
                 </div>
                 <div className="flex items-center mb-2">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <Star key={star} className={`w-4 h-4 ${star <= Math.floor(testimonial.rating_Value) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} />
                   ))}
                 </div>
-                <p className="text-base text-gray-700">{testimonial.review}</p>
+                <p className="text-base text-gray-700">{testimonial.comment || "Amazing experience!"}</p>
               </CardContent>
             </Card>
           ))}

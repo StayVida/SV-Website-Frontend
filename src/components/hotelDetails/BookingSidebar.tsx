@@ -4,10 +4,18 @@ import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar, Users, Check, User, Phone, Loader2, CreditCard, Banknote } from "lucide-react";
+import { Calendar, Users, Check, User, Phone, Loader2, CreditCard, Banknote, Edit2 } from "lucide-react";
 import type { Hotel } from "@/types/hotelType";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   lockRoom,
   createBooking,
@@ -16,6 +24,37 @@ import {
   type LockRoomResponse,
   type CreateBookingResponse
 } from "@/api/booking";
+import { createProfile } from "@/api/auth";
+
+const parseToISODate = (dateStr: string) => {
+  if (!dateStr) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  try {
+    const parts = dateStr.trim().split(' ');
+    if (parts.length >= 2) {
+      const day = parseInt(parts[0], 10);
+      const monthStr = parts[1].toLowerCase();
+      const monthMap: Record<string, number> = {
+        'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+        'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+      };
+      const month = monthMap[monthStr.substring(0, 3)];
+      if (month !== undefined && !isNaN(day)) {
+        const d = new Date();
+        d.setMonth(month);
+        d.setDate(day);
+        if (d < new Date(new Date().setHours(0, 0, 0, 0))) { // past date
+          d.setFullYear(d.getFullYear() + 1);
+        }
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+    }
+  } catch (e) { }
+  return new Date().toISOString().split('T')[0];
+}
 
 interface BookingSidebarProps {
   hotel: Hotel;
@@ -42,6 +81,33 @@ export default function BookingSidebar({
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [lockData, setLockData] = useState<LockRoomResponse | null>(null);
+
+  // Modification dialog state
+  const [isModifyOpen, setIsModifyOpen] = useState(false);
+  const [modifyData, setModifyData] = useState({
+    checkIn: parseToISODate(checkIn),
+    checkOut: parseToISODate(checkOut),
+    adults: adults || "2",
+    children: children || "0",
+  });
+
+  // Sync state if props change (user modifies and refreshes)
+  useEffect(() => {
+    if (isModifyOpen) {
+      setModifyData({
+        checkIn: parseToISODate(checkIn),
+        checkOut: parseToISODate(checkOut),
+        adults: adults || "2",
+        children: children || "0",
+      });
+    }
+  }, [checkIn, checkOut, adults, children, isModifyOpen]);
+
+  const handleModifySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsModifyOpen(false);
+    navigate(`/hotel/${hotel.id}/${modifyData.checkIn}/${modifyData.checkOut}/${modifyData.adults}/${modifyData.children}`);
+  };
 
   const selectedRoomData = hotel.rooms.find((r: any) => r.id === selectedRoom);
 
@@ -70,6 +136,14 @@ export default function BookingSidebar({
   // User example for createBooking details: "totalAmount": 13736.00.
   // Let's estimate total for display before locking using room data.
   const estimatedTotal = selectedRoomData?.totalAmount ?? 0;
+
+  // Mutation: Create Profile
+  const createProfileMutation = useMutation({
+    mutationFn: createProfile,
+    onError: (error: any) => {
+      setBookingError(error.message || "Failed to create profile");
+    }
+  });
 
   // Mutation: Lock Room
   const lockRoomMutation = useMutation({
@@ -129,6 +203,12 @@ export default function BookingSidebar({
     setBookingError(null);
 
     try {
+      // 0. Create/Update Profile
+      await createProfileMutation.mutateAsync({
+        name: guestName,
+        phoneNumber: phoneNumber
+      });
+
       // 1. Lock Room
       const lockResponse = await lockRoomMutation.mutateAsync({
         hotelId: hotel.id,
@@ -206,7 +286,7 @@ export default function BookingSidebar({
     }
   };
 
-  const isProcessing = lockRoomMutation.isPending || createBookingMutation.isPending || razorpayOrderMutation.isPending || verifyPaymentMutation.isPending;
+  const isProcessing = createProfileMutation.isPending || lockRoomMutation.isPending || createBookingMutation.isPending || razorpayOrderMutation.isPending || verifyPaymentMutation.isPending;
 
   // Update payment method if hotel config changes
   useEffect(() => {
@@ -256,41 +336,102 @@ export default function BookingSidebar({
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Check-in</label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  value={checkIn}
-                  readOnly
-                  className="pl-10"
-                />
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">Stay Details</label>
+                <Dialog open={isModifyOpen} onOpenChange={setIsModifyOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-6 text-xs text-primary bg-primary/5 hover:bg-primary/10">
+                      <Edit2 className="w-3 h-3 mr-1" /> Edit
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Modify Booking Details</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleModifySubmit} className="space-y-4 mt-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="modifyCheckIn">Check In</Label>
+                          <Input
+                            id="modifyCheckIn"
+                            type="date"
+                            value={modifyData.checkIn}
+                            onChange={(e) => setModifyData({ ...modifyData, checkIn: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="modifyCheckOut">Check Out</Label>
+                          <Input
+                            id="modifyCheckOut"
+                            type="date"
+                            value={modifyData.checkOut}
+                            min={modifyData.checkIn}
+                            onChange={(e) => setModifyData({ ...modifyData, checkOut: e.target.value })}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="modifyAdults">Adults</Label>
+                          <Input
+                            id="modifyAdults"
+                            type="number"
+                            min="1"
+                            value={modifyData.adults}
+                            onChange={(e) => setModifyData({ ...modifyData, adults: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="modifyChildren">Children</Label>
+                          <Input
+                            id="modifyChildren"
+                            type="number"
+                            min="0"
+                            value={modifyData.children}
+                            onChange={(e) => setModifyData({ ...modifyData, children: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <Button type="submit" className="w-full mt-4">Save Changes</Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Check-out</label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  value={checkOut}
-                  readOnly
-                  className="pl-10"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Persons</label>
-              <div className="flex space-x-2">
-                <div className="flex-1">
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2">
                   <div className="relative">
-                    <Users className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input value={`${adults} Adults`} readOnly className="pl-10" placeholder="2 Adults" />
+                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      value={checkIn}
+                      readOnly
+                      title="Check In"
+                      className="pl-10 text-xs bg-gray-50 text-gray-700 cursor-not-allowed"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      value={checkOut}
+                      readOnly
+                      title="Check Out"
+                      className="pl-10 text-xs bg-gray-50 text-gray-700 cursor-not-allowed"
+                    />
                   </div>
                 </div>
-              </div>
-              <div className="mt-2">
-                <Input value={`${children} Children`} readOnly placeholder="0 Children" />
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="relative">
+                    <Users className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input value={`${adults} Adults`} readOnly className="pl-10 text-xs bg-gray-50 text-gray-700 cursor-not-allowed" title="Adults" />
+                  </div>
+                  <div className="relative">
+                    <Input value={`${children} Children`} readOnly className="pl-3 text-xs bg-gray-50 text-gray-700 cursor-not-allowed" title="Children" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -335,9 +476,17 @@ export default function BookingSidebar({
             </div>
             <div className="h-px bg-gray-200" />
             <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
+              <span>Total Price</span>
               <span>₹{estimatedTotal.toLocaleString()}</span>
             </div>
+
+            {/* Show Payable / Advance Amount */}
+            {selectedRoomData?.advanceAmount !== undefined && (
+              <div className="flex justify-between text-green-700 font-bold mt-2 bg-green-50 p-2 rounded-md border border-green-200">
+                <span>Payable Now (Advance)</span>
+                <span>₹{selectedRoomData.advanceAmount.toLocaleString()}</span>
+              </div>
+            )}
           </div>
 
           {/* Payment Method */}

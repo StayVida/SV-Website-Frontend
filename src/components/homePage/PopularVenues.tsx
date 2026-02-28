@@ -3,6 +3,31 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Users, MapPin } from "lucide-react";
 
 function PopularVenues() {
+  const venues = [
+    {
+      name: "Grand Plaza 1",
+      capacity: "200-300 guests",
+      location: "Downtown",
+    },
+    {
+      name: "Grand Plaza 2",
+      capacity: "150-250 guests",
+      location: "City Center",
+    },
+    {
+      name: "Grand Plaza 3",
+      capacity: "300-400 guests",
+      location: "Uptown",
+    },
+    {
+      name: "Grand Plaza 4",
+      capacity: "100-200 guests",
+      location: "Suburbs",
+    },
+  ];
+
+  if (!venues || venues.length === 0) return null;
+
   return (
     <section className="py-6 md:py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,9 +67,8 @@ function PopularVenues() {
             >
               <div className="relative h-40">
                 <img
-                  src={`/placeholder.svg?height=200&width=300&query=elegant event venue ${
-                    index + 1
-                  }`}
+                  src={`/placeholder.svg?height=200&width=300&query=elegant event venue ${index + 1
+                    }`}
                   alt={venue.name}
                   className="object-cover w-full h-full"
                 />
@@ -104,9 +128,8 @@ function PopularVenues() {
             >
               <div className="relative h-48">
                 <img
-                  src={`/placeholder.svg?height=200&width=300&query=elegant event venue ${
-                    index + 1
-                  }`}
+                  src={`/placeholder.svg?height=200&width=300&query=elegant event venue ${index + 1
+                    }`}
                   alt={venue.name}
                   className="object-cover w-full h-full"
                 />

@@ -77,7 +77,7 @@ function HotelDetails() {
     if (isoDateRegex.test(dateStr)) {
       return dateStr;
     }
-    
+
     try {
       // Parse date in format "01 Nov" or "01 November" or "15 Mar"
       const parts = dateStr.trim().split(' ');
@@ -87,7 +87,7 @@ function HotelDetails() {
 
       const day = parseInt(parts[0], 10);
       const monthStr = parts[1].toLowerCase();
-      
+
       // Month name to number mapping
       const monthMap: { [key: string]: number } = {
         'jan': 0, 'january': 0,
@@ -111,7 +111,7 @@ function HotelDetails() {
 
       const currentYear = new Date().getFullYear();
       const date = new Date(currentYear, month, day);
-      
+
       // Validate the date
       if (isNaN(date.getTime())) {
         throw new Error("Invalid date");
@@ -121,18 +121,18 @@ function HotelDetails() {
       if (date < new Date()) {
         date.setFullYear(currentYear + 1);
       }
-      
+
       const year = date.getFullYear();
       const monthNum = String(date.getMonth() + 1).padStart(2, '0');
       const dayNum = String(date.getDate()).padStart(2, '0');
-      
+
       const result = `${year}-${monthNum}-${dayNum}`;
-      
+
       // Final validation - ensure result is valid
       if (result.includes('NaN') || !isoDateRegex.test(result)) {
         throw new Error("Invalid date result");
       }
-      
+
       return result;
     } catch (error) {
       console.error("Date parsing error:", error, "for date:", dateStr);
@@ -193,7 +193,7 @@ function HotelDetails() {
           checkOut: checkOutDate,
         });
         const url = `${API_BASE_URI}${API_ENDPOINTS.HOTEL_DETAILS}/${id}/rooms?${params.toString()}`;
-        
+
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -203,7 +203,7 @@ function HotelDetails() {
         });
 
         let result: ApiResponse;
-        
+
         // Try to parse response as JSON
         try {
           const responseText = await response.text();
@@ -245,10 +245,11 @@ function HotelDetails() {
                 price: roomType.price,
                 platformCharges: roomType.platformCharges,
                 taxRate: roomType.taxRate,
-                stayDuration: stayDuration, 
+                stayDuration: stayDuration,
                 totalAmount: roomType.totalAmount,
                 adultsMax: roomType.adultsMax,
                 childrenMax: roomType.childrenMax,
+                advanceAmount: roomType.advanceAmount,
                 available: 1,
               }));
             } else {
@@ -261,10 +262,11 @@ function HotelDetails() {
                 price: roomType.price,
                 platformCharges: roomType.platformCharges,
                 taxRate: roomType.taxRate,
-                stayDuration: stayDuration, 
+                stayDuration: stayDuration,
                 totalAmount: roomType.totalAmount,
                 adultsMax: roomType.adultsMax,
                 childrenMax: roomType.childrenMax,
+                advanceAmount: roomType.advanceAmount,
                 available: 1,
               }];
             }
@@ -277,7 +279,7 @@ function HotelDetails() {
             type: apiData.forEvent ? "Resort" : "Hotel", // Default type based on forEvent
             destination: apiData.destination,
             rating: apiData.rating,
-            pricePerNight: flatRooms.length > 0 ? flatRooms[0].price : 0, 
+            pricePerNight: flatRooms.length > 0 ? flatRooms[0].price : 0,
             tags: apiData.tags || [],
             amenities: (apiData.amenities || []).map((amenity) => ({
               name: amenity,
@@ -290,7 +292,7 @@ function HotelDetails() {
           };
 
           setHotel(mappedHotel);
-          
+
           // Select first room by default
           if (mappedHotel.rooms.length > 0) {
             setSelectedRoom(mappedHotel.rooms[0].id);
@@ -362,13 +364,13 @@ function HotelDetails() {
           <PropertyOverview hotel={hotel} />
           <Amenities hotel={hotel} />
           <HotelReviews hotelId={hotel.id} />
-          <RoomList 
-            hotel={hotel} 
-            selectedRoom={selectedRoom} 
-            onRoomSelect={setSelectedRoom} 
+          <RoomList
+            hotel={hotel}
+            selectedRoom={selectedRoom}
+            onRoomSelect={setSelectedRoom}
           />
         </div>
-        <BookingSidebar 
+        <BookingSidebar
           hotel={hotel}
           selectedRoom={selectedRoom}
           checkIn={checkIn || ""}

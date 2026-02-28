@@ -9,6 +9,18 @@ import {
 } from "./types";
 import { MultiSelectField } from "./MultiSelectField";
 
+const countryCodes = [
+  { code: "+91", label: "India (+91)" },
+  { code: "+1", label: "US/Canada (+1)" },
+  { code: "+44", label: "UK (+44)" },
+  { code: "+61", label: "Australia (+61)" },
+  { code: "+81", label: "Japan (+81)" },
+  { code: "+49", label: "Germany (+49)" },
+  { code: "+33", label: "France (+33)" },
+  { code: "+971", label: "UAE (+971)" },
+  { code: "+65", label: "Singapore (+65)" },
+];
+
 interface BasicDetailsFormProps {
   name: string;
   setName: (value: string) => void;
@@ -80,7 +92,7 @@ export const BasicDetailsForm = ({
     <>
       <Card className="border-none shadow-lg">
         <CardContent className="p-6 space-y-6">
-          <h2 className="text-xl font-semibold text-gray-900">Property Images</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Property Images *</h2>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
             <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
             <p className="text-gray-600 mb-4">
@@ -146,6 +158,7 @@ export const BasicDetailsForm = ({
                 id="property-type"
                 value={type}
                 onChange={(e) => setType(e.target.value)}
+                required
                 className="mt-2 h-12 w-full rounded-md border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
               >
                 {propertyTypes.map((option) => (
@@ -200,13 +213,20 @@ export const BasicDetailsForm = ({
               <Label htmlFor="country-code" className="text-sm text-gray-700 font-medium">
                 Country Code *
               </Label>
-              <Input
+              <select
                 id="country-code"
                 value={countryCode}
                 onChange={(e) => setCountryCode(e.target.value)}
                 required
-                className="mt-2 h-12"
-              />
+                className="mt-2 h-12 w-full rounded-md border border-gray-300 px-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
+              >
+                <option value="" disabled>Select...</option>
+                {countryCodes.map(({ code, label }) => (
+                  <option key={code} value={code}>
+                    {label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="md:col-span-2">
               <Label htmlFor="phone-number" className="text-sm text-gray-700 font-medium">
@@ -230,14 +250,14 @@ export const BasicDetailsForm = ({
           <h2 className="text-xl font-semibold text-gray-900">Tags & Amenities</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <MultiSelectField
-              label="Tags"
+              label="Tags *"
               placeholder="Select tags"
               options={tagsOptions}
               selected={selectedTags}
               onChange={setSelectedTags}
             />
             <MultiSelectField
-              label="Amenities"
+              label="Amenities *"
               placeholder="Select amenities"
               options={amenitiesOptions}
               selected={selectedAmenities}
@@ -289,7 +309,7 @@ export const BasicDetailsForm = ({
             <iframe
               title="Selected location"
               src={mapSrc}
-              className="w-full h-72 border-0"
+              className="w-full h-90 border-0"
               loading="lazy"
             />
             <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 text-sm text-gray-600">
@@ -313,15 +333,13 @@ export const BasicDetailsForm = ({
             <button
               type="button"
               onClick={handleProvideEventsToggle}
-              className={`w-16 h-8 rounded-full px-1 transition ${
-                provideEvents ? "bg-primary" : "bg-gray-300"
-              }`}
+              className={`w-16 h-8 rounded-full px-1 transition ${provideEvents ? "bg-primary" : "bg-gray-300"
+                }`}
               aria-pressed={provideEvents}
             >
               <span
-                className={`block h-6 w-6 bg-white rounded-full shadow transform transition ${
-                  provideEvents ? "translate-x-8" : ""
-                }`}
+                className={`block h-6 w-6 bg-white rounded-full shadow transform transition ${provideEvents ? "translate-x-8" : ""
+                  }`}
               />
             </button>
           </div>

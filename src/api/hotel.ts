@@ -50,10 +50,11 @@ export interface CreateRatingRequest {
 }
 
 /**
- * Fetch ratings for a specific hotel
+ * Fetch ratings for a specific hotel or all ratings if no hotelId is provided
  */
-export const getHotelRatings = async (hotelId: string): Promise<HotelRatingsResponse> => {
-    const response = await apiClient.get(`${API_ENDPOINTS.HOTEL_REVIEWS}?hotel_ID=${hotelId}`);
+export const getHotelRatings = async (hotelId?: string): Promise<HotelRatingsResponse> => {
+    const url = hotelId ? `${API_ENDPOINTS.HOTEL_REVIEWS}?hotel_ID=${hotelId}` : API_ENDPOINTS.HOTEL_REVIEWS;
+    const response = await apiClient.get(url);
     return response.data;
 };
 

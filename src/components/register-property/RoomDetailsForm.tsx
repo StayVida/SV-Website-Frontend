@@ -68,7 +68,7 @@ export const RoomDetailsForm = ({
               </div>
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-gray-700 font-medium">Room Type *</Label>
+                  <Label className="text-sm text-gray-700 font-medium">Room Name *</Label>
                   <Input
                     value={room.roomType}
                     onChange={(e) => updateRoomField(room.id, "roomType", e.target.value)}

@@ -14,6 +14,7 @@ export interface Room {
   available: number;
   stayDuration: number;
   totalAmount?: number;
+  advanceAmount?: number;
 }
 
 export interface Hotel {

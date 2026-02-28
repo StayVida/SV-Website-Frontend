@@ -128,7 +128,7 @@ export const MultiSelectField = ({
                 className="text-primary hover:text-primary/70"
                 aria-label={`Remove ${value}`}
               >
-                <X className="h-3 w-3" />
+                <X className="h-3 w-3 bg-transparent text-black" />
               </button>
             </span>
           ))}

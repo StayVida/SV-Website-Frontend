@@ -154,3 +154,16 @@ export const saveUserData = (userData: User, token: string): void => {
   localStorage.setItem('user', JSON.stringify(userData));
   localStorage.setItem('token', token);
 };
+
+/**
+ * Create or update user profile
+ */
+export const createProfile = async (data: { name: string; phoneNumber: string }): Promise<any> => {
+  try {
+    const response = await apiClient.post('/api/profile/create', data);
+    return response.data;
+  } catch (error) {
+    console.error('Create profile error:', error);
+    throw error;
+  }
+};

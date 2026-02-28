@@ -94,50 +94,11 @@ function FeaturedProperties() {
 
     return `/hotel/${hotelId}/${encodeURIComponent(checkIn)}/${encodeURIComponent(checkOut)}/${adults}/${children}`;
   };
-  if (isLoading) {
-    return (
-      <section className="py-8 px-4 sm:py-12 md:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-6 md:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Featured Properties</h2>
-          </div>
-          <div className="text-center py-12">
-            <p className="text-gray-600">Loading featured properties...</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  if (isLoading) return null;
 
-  if (error) {
-    return (
-      <section className="py-8 px-4 sm:py-12 md:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-6 md:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Featured Properties</h2>
-          </div>
-          <div className="text-center py-12">
-            <p className="text-red-600">{error}</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  if (error) return null;
 
-  if (!Array.isArray(featuredProperties) || featuredProperties.length === 0) {
-    return (
-      <section className="py-8 px-4 sm:py-12 md:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-6 md:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Featured Properties</h2>
-          </div>
-          <div className="text-center py-12">
-            <p className="text-gray-600">No featured properties available at the moment.</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  if (!Array.isArray(featuredProperties) || featuredProperties.length === 0) return null;
 
   return (
     <section className="py-8 px-4 sm:py-12 md:py-16 lg:py-20">
@@ -181,8 +142,8 @@ function FeaturedProperties() {
                           <Star
                             key={star}
                             className={`w-4 h-4 ${star <= fullStars
-                                ? "fill-yellow-400 text-yellow-400"
-                                : "text-gray-300"
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
                               }`}
                           />
                         ))}
@@ -234,8 +195,8 @@ function FeaturedProperties() {
                           <Star
                             key={star}
                             className={`w-4 h-4 ${star <= fullStars
-                                ? "fill-yellow-400 text-yellow-400"
-                                : "text-gray-300"
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
                               }`}
                           />
                         ))}
