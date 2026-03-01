@@ -57,10 +57,9 @@ const NavBar = () => {
                   key={item.name}
                   to={item.href}
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-md font-medium transition-colors ${
-                      isActive
-                        ? "text-primary font-semibold"
-                        : "text-gray-600 hover:text-primary"
+                    `px-3 py-2 rounded-md text-md font-medium transition-colors ${isActive
+                      ? "text-primary font-semibold"
+                      : "text-gray-600 hover:text-primary"
                     }`
                   }
                 >
@@ -72,24 +71,24 @@ const NavBar = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {ownerId ? (
-              <Button 
-                variant="default" 
+            {authData?.user?.role === "hotel_owner" || ownerId ? (
+              <Button
+                variant="default"
                 size="lg"
                 onClick={() => window.location.href = "https://sv-hotel-owner-dashboard.vercel.app/"}
               >
                 My Dashboard
               </Button>
             ) : (
-              <Button 
-                variant="default" 
+              <Button
+                variant="default"
                 size="lg"
                 onClick={handleRegisterProperty}
               >
                 Register Property
               </Button>
             )}
-            
+
             {isAuthenticated ? (
               <button
                 onClick={() => navigate("/profile")}
@@ -102,15 +101,15 @@ const NavBar = () => {
                   </AvatarFallback>
                 </Avatar>
               </button>
-            ): (<Button 
-                variant="default" 
-                size="lg" 
-                className="text-primary bg-background border-primary border-1 hover:text-white"
-                onClick={() => setIsAuthDialogOpen(true)}
-              >
-                Get Started
-              </Button>
-              )
+            ) : (<Button
+              variant="default"
+              size="lg"
+              className="text-primary bg-background border-primary border-1 hover:text-white"
+              onClick={() => setIsAuthDialogOpen(true)}
+            >
+              Get Started
+            </Button>
+            )
             }
           </div>
 
@@ -140,10 +139,9 @@ const NavBar = () => {
                   key={item.name}
                   to={item.href}
                   className={({ isActive }) =>
-                    `block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      isActive
-                        ? "text-primary font-semibold bg-primary/10"
-                        : "text-gray-600 hover:text-primary"
+                    `block px-3 py-2 rounded-md text-base font-medium transition-colors ${isActive
+                      ? "text-primary font-semibold bg-primary/10"
+                      : "text-gray-600 hover:text-primary"
                     }`
                   }
                   end={item.href === "/"}
@@ -160,8 +158,8 @@ const NavBar = () => {
                       <p className="text-sm font-medium text-gray-900">{authData?.user.email}</p>
                       <p className="text-xs text-gray-500 mt-1 capitalize">{authData?.user.role}</p>
                     </div>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       className="w-full flex items-center justify-start gap-2"
                       onClick={() => {
@@ -172,8 +170,8 @@ const NavBar = () => {
                       <User className="w-4 h-4" />
                       Profile
                     </Button>
-                    <Button 
-                      variant="default" 
+                    <Button
+                      variant="default"
                       size="sm"
                       onClick={() => {
                         logout();
@@ -184,41 +182,40 @@ const NavBar = () => {
                     </Button>
                   </div>
                 ) : (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="border-1 border-primary text-primary"
-                      onClick={() => {
-                        setIsAuthDialogOpen(true);
-                        setIsMobileMenuOpen(false);
-                      }}
-                    >
-                      Get Started
-                    </Button>
-                    {isAuthenticated ? (
-                      <Button 
-                        variant="default" 
-                        size="sm"
-                        onClick={() => {
-                          window.location.href = "https://sv-hotel-owner-dashboard.vercel.app/";
-                        }}
-                      >
-                        My Dashboard
-                      </Button>
-                    ) : (
-                      <Button 
-                        variant="default" 
-                        size="sm"
-                        onClick={() => {
-                          handleRegisterProperty();
-                          setIsMobileMenuOpen(false);
-                        }}
-                      >
-                        Register Property
-                      </Button>
-                    )}
-                  </>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-1 border-primary text-primary"
+                    onClick={() => {
+                      setIsAuthDialogOpen(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Get Started
+                  </Button>
+                )}
+
+                {authData?.user?.role === "hotel_owner" || ownerId ? (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      window.location.href = "https://sv-hotel-owner-dashboard.vercel.app/";
+                    }}
+                  >
+                    My Dashboard
+                  </Button>
+                ) : (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      handleRegisterProperty();
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Register Property
+                  </Button>
                 )}
               </div>
             </div>
@@ -227,8 +224,8 @@ const NavBar = () => {
       </nav>
 
       {/* Auth Dialog */}
-      <AuthDialog 
-        open={isAuthDialogOpen} 
+      <AuthDialog
+        open={isAuthDialogOpen}
         onOpenChange={setIsAuthDialogOpen}
       />
     </header>
