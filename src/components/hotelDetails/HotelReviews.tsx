@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Star, User, ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
-import { getHotelRatings } from "@/api/hotel";
+import { getHotelRatings } from "@/api/hotelsApi";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

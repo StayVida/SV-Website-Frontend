@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getAmenities, getTags, getFeatures } from '@/api/lookup';
-import { getLocations } from '@/api/hotel';
+import { getLocations } from '@/api/hotelsApi';
 import apiClient from '@/api/axios';
 
 export const useAmenities = () => {

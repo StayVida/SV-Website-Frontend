@@ -12,10 +12,10 @@ import { BasicDetailsForm } from "@/components/register-property/BasicDetailsFor
 import { EventDetailsForm } from "@/components/register-property/EventDetailsForm";
 import { RoomDetailsForm } from "@/components/register-property/RoomDetailsForm";
 import { API_ENDPOINTS, DASHBOARD_URL } from "@/config/api";
-import { 
-  useRegisterHotel, 
-  useAddEventPackage, 
-  useRegisterRoom 
+import {
+  useRegisterHotel,
+  useAddEventPackage,
+  useRegisterRoom
 } from "@/hooks/useLookups";
 
 const generateId = () => Math.random().toString(36).slice(2, 11);
@@ -31,6 +31,7 @@ const createRoom = (): RoomForm => ({
   images: [],
   roomNumber: "",
 });
+
 
 const createEventPackage = (): EventPackage => ({
   id: generateId(),
@@ -100,10 +101,7 @@ const RegisterProperty = () => {
     );
   };
 
-  const mapSrc = useMemo(
-    () => `https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`,
-    [latitude, longitude]
-  );
+
 
   const handleProvideEventsToggle = () => {
     setProvideEvents((prev) => {
@@ -157,9 +155,9 @@ const RegisterProperty = () => {
       prev.map((room) =>
         room.id === roomId
           ? {
-              ...room,
-              [field]: value,
-            }
+            ...room,
+            [field]: value,
+          }
           : room
       )
     );
@@ -243,7 +241,7 @@ const RegisterProperty = () => {
         formData.append("bedCount", room.bedCount || "0");
         formData.append("price", room.price || "0");
         formData.append("roomNumber", room.roomNumber || "0");
-        
+
         room.images.forEach((image) => {
           if (image.file) {
             formData.append("images", image.file);
@@ -452,7 +450,7 @@ const RegisterProperty = () => {
               longitude={longitude}
               setLongitude={setLongitude}
               handleUseCurrentLocation={handleUseCurrentLocation}
-              mapSrc={mapSrc}
+
               provideEvents={provideEvents}
               handleProvideEventsToggle={handleProvideEventsToggle}
             />
@@ -500,10 +498,10 @@ const RegisterProperty = () => {
                   onClick={async () => {
                     try {
                       setIsSubmitting(true);
-                      
+
                       // Get hotelId from localStorage
                       const hotelId = localStorage.getItem("hotelId");
-                      
+
                       if (!hotelId) {
                         alert("Hotel ID not found. Please complete Step 1 first.");
                         return;
@@ -522,7 +520,7 @@ const RegisterProperty = () => {
                       });
 
                       await Promise.all(savePromises);
-                      
+
                       // Navigate to Room Details
                       setCurrentStep(3);
                     } catch (error) {

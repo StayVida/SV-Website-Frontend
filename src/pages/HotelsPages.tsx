@@ -8,7 +8,7 @@ import { MapPin, Hotel } from "lucide-react";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 import LocationsSkeleton from "@/skeleton/LocationsSkeleton";
 import { LocationCard } from "@/components/homePage/LocationCard";
-import { getLocations, type LocationData } from "@/api/hotel";
+import { getLocations, type LocationData } from "@/api/hotelsApi";
 
 interface SearchData {
   destination: string;
@@ -35,7 +35,7 @@ const getDefaultDates = () => {
 
 function HotelsPages() {
   const navigate = useNavigate();
-  
+
   // Search data state
   const defaultDates = getDefaultDates();
   const [searchData, setSearchData] = useState<SearchData>({
@@ -111,8 +111,8 @@ function HotelsPages() {
           {!isLoading && !error && cities.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {cities.slice(0, 8).map((city, index) => (
-                <LocationCard 
-                  key={index} 
+                <LocationCard
+                  key={index}
                   city={city}
                   onClick={() => {
                     setSearchData({ ...searchData, destination: city.location });
@@ -132,8 +132,8 @@ function HotelsPages() {
 
           {/* View All Destinations Button */}
           <div className="text-center mt-8">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="px-8 py-3"
               onClick={() => {
                 // Show all cities or navigate to a full list page

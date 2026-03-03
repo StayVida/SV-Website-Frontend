@@ -7,8 +7,10 @@ export const ensureBase64Prefix = (img: string): string => {
 
     let cleanImg = img.trim();
 
-    // If it's a full URL, return as-is
-    if (cleanImg.startsWith("http")) return cleanImg;
+    // If it's a full URL or already a valid data URI, return as-is
+    if (cleanImg.startsWith("http") || (cleanImg.startsWith("data:image/") && cleanImg.includes(","))) {
+        return cleanImg;
+    }
 
     // Strip existing data URI prefix if present to check actual content
     if (cleanImg.startsWith("data:")) {

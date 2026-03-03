@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Star, Mail, Shield, LogOut, CalendarCheck, Clock } from "lucide-react";
+import { MapPin, Star, Mail, Shield, LogOut, CalendarCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,15 +18,17 @@ interface RecommendedHotel {
 interface Booking {
   id: string;
   hotelName: string;
-  destination?: string;
+  roomNumber?: number;
   checkIn?: string;
   checkOut?: string;
-  guests?: number;
-  status?: string;
+  bookingStatus?: string;
+  paymentStatus?: string;
+  paymentLeft?: number;
+  grossAmount?: number;
 }
 
 const AVATAR_API_URL = "https://avatar.iran.liara.run/public";
-const BOOKINGS_ENDPOINT = "/bookings/history";
+const BOOKINGS_ENDPOINT = "/api/profile/history";
 
 const ProfilePage = () => {
   const { authData, logout } = useAuth();
@@ -123,8 +125,8 @@ const ProfilePage = () => {
             typeof item?.price === "number"
               ? item.price
               : Array.isArray(item?.rooms) && typeof item?.rooms[0]?.price === "number"
-              ? item.rooms[0].price
-              : undefined,
+                ? item.rooms[0].price
+                : undefined,
           imageUrl: item?.imageUrl ?? item?.images?.[0] ?? null,
         }));
 
@@ -167,21 +169,19 @@ const ProfilePage = () => {
           throw new Error("Failed to fetch booking history");
         }
 
-        const result = await response.json().catch(() => ({}));
-        const rawBookings = Array.isArray(result?.data)
-          ? result.data
-          : Array.isArray(result?.bookings)
-          ? result.bookings
-          : [];
+        const result = await response.json().catch(() => []);
+        const rawBookings = Array.isArray(result) ? result : Array.isArray(result?.data) ? result.data : [];
 
         const normalized: Booking[] = rawBookings.map((item: any, index: number) => ({
-          id: String(item?.id ?? item?.bookingId ?? item?._id ?? `booking-${index}`),
-          hotelName: item?.hotelName ?? item?.hotel?.name ?? "Unnamed stay",
-          destination: item?.destination ?? item?.hotel?.destination ?? item?.city,
-          checkIn: item?.checkIn ?? item?.checkInDate ?? item?.startDate,
-          checkOut: item?.checkOut ?? item?.checkOutDate ?? item?.endDate,
-          guests: item?.guests ?? item?.guestCount,
-          status: item?.status ?? item?.bookingStatus,
+          id: String(item?.booking_ID ?? item?.id ?? `booking-${index}`),
+          hotelName: item?.name ?? item?.hotelName ?? "Unnamed stay",
+          roomNumber: item?.RoomNumber ?? undefined,
+          checkIn: item?.checkIn,
+          checkOut: item?.checkOut,
+          bookingStatus: item?.booking_Status ?? item?.bookingStatus,
+          paymentStatus: item?.payment_Status ?? item?.paymentStatus,
+          paymentLeft: item?.["payment left"] ?? item?.paymentLeft,
+          grossAmount: item?.["gross amount"] ?? item?.grossAmount,
         }));
 
         setBookings(normalized);
@@ -250,29 +250,57 @@ const ProfilePage = () => {
     <Card key={booking.id} className="border border-gray-200 shadow-sm">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-semibold text-gray-900">{booking.hotelName}</CardTitle>
-        <CardDescription className="flex items-center text-gray-600">
-          <MapPin className="mr-1.5 h-4 w-4 text-gray-400" />
-          {booking.destination ?? "Destination not available"}
-        </CardDescription>
+        <CardDescription className="text-xs text-gray-400 font-mono">{booking.id}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
+        {typeof booking.roomNumber === "number" && (
+          <div className="flex items-center text-sm text-gray-700">
+            <MapPin className="mr-2 h-4 w-4 text-gray-400" />
+            <span>Room {booking.roomNumber}</span>
+          </div>
+        )}
         <div className="flex items-center text-sm text-gray-700">
           <CalendarCheck className="mr-2 h-4 w-4 text-gray-400" />
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-            <span>Check-in: {booking.checkIn ? booking.checkIn : "Not provided"}</span>
+            <span>Check-in: {booking.checkIn ?? "Not provided"}</span>
             <span className="hidden sm:inline-block text-gray-300">•</span>
-            <span>Check-out: {booking.checkOut ? booking.checkOut : "Not provided"}</span>
+            <span>Check-out: {booking.checkOut ?? "Not provided"}</span>
           </div>
         </div>
-        <div className="flex items-center justify-between text-sm text-gray-700">
-          <div className="flex items-center">
-            <Clock className="mr-2 h-4 w-4 text-gray-400" />
-            <span>{booking.guests ? `${booking.guests} guest${booking.guests > 1 ? "s" : ""}` : "Guests not specified"}</span>
-          </div>
-          <span className="font-medium text-gray-900 capitalize">
-            {booking.status ? booking.status : "Completed"}
+        <div className="flex items-center justify-between text-sm">
+          <span className={`capitalize font-medium px-2 py-0.5 rounded-full text-xs ${booking.bookingStatus?.toLowerCase() === "checkedout"
+            ? "bg-green-100 text-green-700"
+            : booking.bookingStatus?.toLowerCase() === "confirmed"
+              ? "bg-blue-100 text-blue-700"
+              : "bg-gray-100 text-gray-600"
+            }`}>
+            {booking.bookingStatus ?? "—"}
+          </span>
+          <span className={`capitalize font-medium text-xs ${booking.paymentStatus?.toLowerCase() === "pending"
+            ? "text-yellow-600"
+            : "text-gray-700"
+            }`}>
+            Payment: {booking.paymentStatus ?? "—"}
           </span>
         </div>
+        {(typeof booking.grossAmount === "number" || typeof booking.paymentLeft === "number") && (
+          <div className="flex items-center justify-between text-sm text-gray-700 border-t border-gray-100 pt-2 mt-1">
+            {typeof booking.grossAmount === "number" && (
+              <span>Total: <span className="font-semibold text-gray-900">₹{booking.grossAmount.toLocaleString()}</span></span>
+            )}
+            {typeof booking.paymentLeft === "number" && (
+              <span>Due: <span className="font-semibold text-red-600">₹{booking.paymentLeft.toLocaleString()}</span></span>
+            )}
+          </div>
+        )}
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full mt-1"
+          onClick={() => navigate(`/booking/${booking.id}`)}
+        >
+          View Details
+        </Button>
       </CardContent>
     </Card>
   );

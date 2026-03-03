@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Star } from "lucide-react"
 import { useQuery } from "@tanstack/react-query";
-import { getHotelRatings } from "@/api/hotel";
+import { getHotelRatings } from "@/api/hotelsApi";
 
 function TestimonialForEvent() {
   const { data, isLoading } = useQuery({

@@ -2,14 +2,6 @@ import apiClient from './axios';
 import { API_ENDPOINTS } from '@/config/api';
 import { normalizeImages } from '@/utils/imageUtils';
 
-export interface LocationData {
-    location: string;
-    lowestPrice: number | null;
-    hotelCount: number;
-    images: string[];
-}
-
-
 export interface Rating {
     rating_ID: number;
     user_ID: number;
@@ -24,6 +16,22 @@ export interface Rating {
 export interface HotelRatingsResponse {
     ratings: Rating[];
     averageRating: number;
+}
+
+/**
+ * Fetch ratings for a specific hotel or all ratings if no hotelId is provided
+ */
+export const getHotelRatings = async (hotelId?: string): Promise<HotelRatingsResponse> => {
+    const url = hotelId ? `${API_ENDPOINTS.HOTEL_REVIEWS}?hotel_ID=${hotelId}` : API_ENDPOINTS.HOTEL_REVIEWS;
+    const response = await apiClient.get(url);
+    return response.data;
+};
+
+export interface LocationData {
+    location: string;
+    lowestPrice: number | null;
+    hotelCount: number;
+    images: string[];
 }
 
 /**
@@ -49,14 +57,6 @@ export interface CreateRatingRequest {
     comment: string;
 }
 
-/**
- * Fetch ratings for a specific hotel or all ratings if no hotelId is provided
- */
-export const getHotelRatings = async (hotelId?: string): Promise<HotelRatingsResponse> => {
-    const url = hotelId ? `${API_ENDPOINTS.HOTEL_REVIEWS}?hotel_ID=${hotelId}` : API_ENDPOINTS.HOTEL_REVIEWS;
-    const response = await apiClient.get(url);
-    return response.data;
-};
 
 /**
  * Create a new rating/review for a hotel stay

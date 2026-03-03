@@ -8,6 +8,7 @@ import {
   type ImagePreview,
 } from "./types";
 import { MultiSelectField } from "./MultiSelectField";
+import { LocationPicker } from "./LocationPicker";
 
 const countryCodes = [
   { code: "+91", label: "India (+91)" },
@@ -46,7 +47,6 @@ interface BasicDetailsFormProps {
   longitude: number;
   setLongitude: (value: number) => void;
   handleUseCurrentLocation: () => void;
-  mapSrc: string;
   provideEvents: boolean;
   handleProvideEventsToggle: () => void;
 }
@@ -78,7 +78,6 @@ export const BasicDetailsForm = ({
   longitude,
   setLongitude,
   handleUseCurrentLocation,
-  mapSrc,
   provideEvents,
   handleProvideEventsToggle,
 }: BasicDetailsFormProps) => {
@@ -306,16 +305,17 @@ export const BasicDetailsForm = ({
             </div>
           </div>
           <div className="rounded-lg border border-gray-200 overflow-hidden">
-            <iframe
-              title="Selected location"
-              src={mapSrc}
-              className="w-full h-90 border-0"
-              loading="lazy"
+            <LocationPicker
+              latitude={latitude}
+              longitude={longitude}
+              onLocationChange={(lat, lng) => {
+                setLatitude(lat);
+                setLongitude(lng);
+              }}
             />
             <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 text-sm text-gray-600">
               <MapPin className="w-4 h-4" />
-              Click “Use Current Location” or adjust the latitude/longitude values manually to
-              update the map preview.
+              Click anywhere on the map to drop a pin and set the location.
             </div>
           </div>
         </CardContent>

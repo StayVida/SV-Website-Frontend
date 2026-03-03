@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getBookingDetails } from "@/api/booking";
-import { createRating } from "@/api/hotel";
+import { createRating } from "@/api/hotelsApi";
 import { Loader2, ArrowLeft, CheckCircle, Clock, Star, Send, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -158,8 +158,11 @@ export default function BookingDetails() {
                 <span className="font-medium">₹{data.platformFee.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Taxes</span>
-                <span className="font-medium">₹{data.tax_amount.toLocaleString()}</span>
+                <span className="text-gray-600">
+                  Taxes
+
+                </span>
+                <span className="font-medium">{(data.tax_amount * 100).toLocaleString()}%</span>
               </div>
               <div className="border-t my-2"></div>
               <div className="flex justify-between text-lg font-bold">
@@ -284,7 +287,7 @@ export default function BookingDetails() {
           </Card>
 
           {/* Hotel Reviews at the bottom */}
-          
+
         </div>
       </div>
     </div>
