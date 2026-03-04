@@ -214,7 +214,8 @@ export default function BookingSidebar({
         hotelId: hotel.id,
         roomType: selectedRoomData?.name || "", // Assuming name matches roomType as per user example logic "Deluxe Suite"
         checkIn,
-        checkOut
+        checkOut,
+        price: selectedRoomData?.price ?? 0
       });
 
       // 2. Create Booking

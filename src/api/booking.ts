@@ -7,6 +7,7 @@ export interface LockRoomRequest {
     roomType: string;
     checkIn: string;
     checkOut: string;
+    price: number;
 }
 
 export interface LockRoomResponse {
