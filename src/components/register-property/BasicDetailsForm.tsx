@@ -95,7 +95,7 @@ export const BasicDetailsForm = ({
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
             <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
             <p className="text-gray-600 mb-4">
-              Upload high-quality images to showcase your property (PNG or JPG)
+              Upload high-quality images (PNG/JPG, less than 50MB, up to 1080p)
             </p>
             <label className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md cursor-pointer hover:bg-primary/90 transition">
               Choose Images

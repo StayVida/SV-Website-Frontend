@@ -12,6 +12,7 @@ import { BasicDetailsForm } from "@/components/register-property/BasicDetailsFor
 import { EventDetailsForm } from "@/components/register-property/EventDetailsForm";
 import { RoomDetailsForm } from "@/components/register-property/RoomDetailsForm";
 import { API_ENDPOINTS, DASHBOARD_URL } from "@/config/api";
+import { toast } from "sonner";
 import {
   useRegisterHotel,
   useAddEventPackage,
@@ -41,6 +42,46 @@ const createEventPackage = (): EventPackage => ({
   amenities: [],
 });
 
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_WIDTH = 1920;
+const MAX_HEIGHT = 1080;
+
+const validateImage = (file: File): Promise<{ valid: boolean; error?: string }> => {
+  return new Promise((resolve) => {
+    if (file.size > MAX_FILE_SIZE) {
+      resolve({ valid: false, error: `Image ${file.name} exceeds 50MB limit.` });
+      return;
+    }
+
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const isLandscape = img.width >= img.height;
+      const isValid = isLandscape
+        ? img.width <= MAX_WIDTH && img.height <= MAX_HEIGHT
+        : img.height <= MAX_WIDTH && img.width <= MAX_HEIGHT;
+
+      if (!isValid) {
+        resolve({
+          valid: false,
+          error: `Image ${file.name} exceeds 1080p resolution (${img.width}x${img.height}).`,
+        });
+      } else {
+        resolve({ valid: true });
+      }
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve({ valid: false, error: `Failed to load image ${file.name}.` });
+    };
+
+    img.src = url;
+  });
+};
+
 const RegisterProperty = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [name, setName] = useState("");
@@ -64,17 +105,26 @@ const RegisterProperty = () => {
   const roomImagesRef = useRef<RoomForm[]>([]);
 
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
 
-    const previews = files.map((file) => {
+    const validPreviews: ImagePreview[] = [];
+    for (const file of files) {
+      const validation = await validateImage(file);
+      if (!validation.valid) {
+        toast.error(validation.error);
+        continue;
+      }
+
       const url = URL.createObjectURL(file);
       const id = `${file.name}-${file.lastModified}-${Math.random().toString(36).slice(2)}`;
-      return { id, url, name: file.name, file };
-    });
+      validPreviews.push({ id, url, name: file.name, file });
+    }
 
-    setImages((prev) => [...prev, ...previews]);
+    if (validPreviews.length > 0) {
+      setImages((prev) => [...prev, ...validPreviews]);
+    }
     event.target.value = "";
   };
 
@@ -169,21 +219,34 @@ const RegisterProperty = () => {
     );
   };
 
-  const handleRoomImageUpload = (roomId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRoomImageUpload = async (roomId: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
-    setRooms((prev) =>
-      prev.map((room) => {
-        if (room.id !== roomId) return room;
-        const previews = files.map((file) => ({
-          id: `${roomId}-${file.name}-${file.lastModified}-${Math.random().toString(36).slice(2)}`,
-          url: URL.createObjectURL(file),
-          name: file.name,
-          file,
-        }));
-        return { ...room, images: [...room.images, ...previews] };
-      })
-    );
+
+    const validPreviews: ImagePreview[] = [];
+    for (const file of files) {
+      const validation = await validateImage(file);
+      if (!validation.valid) {
+        toast.error(validation.error);
+        continue;
+      }
+
+      validPreviews.push({
+        id: `${roomId}-${file.name}-${file.lastModified}-${Math.random().toString(36).slice(2)}`,
+        url: URL.createObjectURL(file),
+        name: file.name,
+        file,
+      });
+    }
+
+    if (validPreviews.length > 0) {
+      setRooms((prev) =>
+        prev.map((room) => {
+          if (room.id !== roomId) return room;
+          return { ...room, images: [...room.images, ...validPreviews] };
+        })
+      );
+    }
     event.target.value = "";
   };
 

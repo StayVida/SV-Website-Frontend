@@ -149,7 +149,7 @@ export const RoomDetailsForm = ({
               <div className="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                 <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-600 mb-3">
-                  Upload room-specific images (PNG or JPG)
+                  Upload room-specific images (PNG/JPG, less than 50MB, up to 1080p)
                 </p>
                 <label className="inline-flex items-center px-3 py-2 bg-primary text-white rounded-md cursor-pointer hover:bg-primary/90 transition">
                   Upload Images
