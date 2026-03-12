@@ -6,6 +6,7 @@ import EventInfo from "@/components/eventDetails/EventInfo";
 import EventOverview from "@/components/eventDetails/EventOverview";
 import Amenities from "@/components/eventDetails/Amenities";
 import EventBookingSidebar from "@/components/eventDetails/EventBookingSidebar";
+import usePageSEO from "@/hooks/usePageSEO";
 
 interface Event {
   id: string;
@@ -29,6 +30,13 @@ function EventDetails() {
   const { id, checkIn, checkOut, persons, eventType } = useParams();
   const [event, setEvent] = useState<Event | null>(null);
   const [notFound, setNotFound] = useState(false);
+
+  usePageSEO({
+    title: event ? event.name : "Event Details",
+    description: event
+      ? `Book ${event.name} — a ${event.type} venue in ${event.destination} on StayVida.`
+      : "View event venue details and book your perfect venue on StayVida.",
+  });
 
   useEffect(() => {
     // Find event data from JSON

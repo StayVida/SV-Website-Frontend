@@ -10,6 +10,7 @@ import BookingSidebar from "@/components/hotelDetails/BookingSidebar";
 import HotelReviews from "@/components/hotelDetails/HotelReviews";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 import { normalizeImages, ensureBase64Prefix } from "@/utils/imageUtils";
+import usePageSEO from "@/hooks/usePageSEO";
 
 interface ApiRoomInstance {
   roomId: string;
@@ -60,6 +61,14 @@ function HotelDetails() {
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  usePageSEO({
+    title: hotel ? hotel.name : "Hotel Details",
+    description: hotel
+      ? `Book ${hotel.name} in ${hotel.destination} on StayVida. ${hotel.description?.slice(0, 100) ?? ""}`
+      : "View hotel details and book your perfect stay on StayVida.",
+    keywords: hotel ? `${hotel.name}, hotel ${hotel.destination}, book hotel StayVida` : "hotel details",
+  });
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });

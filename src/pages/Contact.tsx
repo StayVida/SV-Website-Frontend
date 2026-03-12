@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
+import usePageSEO from "@/hooks/usePageSEO";
 
 // Reusable animated container for scroll-reveal effects
 function ScrollReveal({ children, className, delay = 0, direction = "up" }: { children: ReactNode, className?: string, delay?: number, direction?: "up" | "left" | "right" | "fade" }) {
@@ -64,6 +65,11 @@ function ScrollReveal({ children, className, delay = 0, direction = "up" }: { ch
 }
 
 function Contact() {
+  usePageSEO({
+    title: "Contact Us",
+    description: "Get in touch with the StayVida team for booking assistance, partnerships, or any queries. We respond within 24 hours.",
+    keywords: "contact StayVida, support, hotel booking help",
+  });
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -172,10 +178,10 @@ function Contact() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Phone, title: "Phone", details: ["+1 (555) 123-4567", "+1 (555) 987-6543"], color: "from-blue-500 to-cyan-400" },
-              { icon: Mail, title: "Email", details: ["info@svwebsite.com", "support@svwebsite.com"], color: "from-primary to-green-500" },
-              { icon: MapPin, title: "Address", details: ["123 Business Street", "Suite 100, City 12345"], color: "from-purple-500 to-pink-500" },
-              { icon: Clock, title: "Hours", details: ["Mon-Fri: 9AM - 6PM", "Sat-Sun: 10AM - 4PM"], color: "from-amber-500 to-orange-500" }
+              { icon: Phone, title: "Phone", details: ["+91 94057 58183"], color: "from-blue-500 to-cyan-400" },
+              { icon: Mail, title: "Email", details: ["contact.stayvida@gmail.com"], color: "from-primary to-green-500" },
+              { icon: MapPin, title: "Address", details: ["143, Dr Sabne Rd, Main market", "Mahabaleshwar, Maharashtra 412806"], color: "from-purple-500 to-pink-500" },
+              { icon: Clock, title: "Hours", details: ["Mon-Sun: 9AM - 9PM"], color: "from-amber-500 to-orange-500" }
             ].map((info, idx) => (
               <ScrollReveal delay={idx * 150} key={idx} direction="up">
                 <Card className="group h-full bg-white/80 backdrop-blur-xl border-white/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden relative rounded-3xl">
@@ -401,7 +407,7 @@ function Contact() {
                 variant="secondary"
                 size="lg"
                 className="rounded-full px-10 py-7 text-lg font-bold shadow-2xl hover:scale-105 transition-transform bg-white text-neutral-900 hover:bg-neutral-100"
-                onClick={() => window.open('tel:+15551234567')}
+                onClick={() => window.open('tel:+919405758183')}
               >
                 Call Hotline Now
               </Button>

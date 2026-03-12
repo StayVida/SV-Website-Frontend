@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 import LocationsSkeleton from "@/skeleton/LocationsSkeleton";
+import usePageSEO from "@/hooks/usePageSEO";
 
 interface SearchData {
   eventType: string;
@@ -66,6 +67,11 @@ const createEventCards = (
 };
 
 function EventsPages() {
+  usePageSEO({
+    title: "Events",
+    description: "Discover and book event-friendly venues and wedding locations across India with StayVida. Plan your perfect event today.",
+    keywords: "event venues India, wedding venues, event planning, StayVida events",
+  });
   const navigate = useNavigate();
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });

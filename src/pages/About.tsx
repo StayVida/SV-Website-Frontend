@@ -5,6 +5,7 @@ import { Users, Target, Heart, Award, Globe, Shield, ChevronRight } from "lucide
 import { cn } from "@/lib/utils";
 import teamsImg from "@/assets/teams.jpeg";
 import companyImg from "@/assets/comapny.jpeg";
+import usePageSEO from "@/hooks/usePageSEO";
 
 // Reusable animated container for scroll-reveal effects
 function ScrollReveal({ children, className, delay = 0, direction = "up" }: { children: ReactNode, className?: string, delay?: number, direction?: "up" | "left" | "right" }) {
@@ -53,6 +54,11 @@ function ScrollReveal({ children, className, delay = 0, direction = "up" }: { ch
 }
 
 function About() {
+  usePageSEO({
+    title: "About Us",
+    description: "Learn about StayVida — our story, mission, values, and the team behind India's trusted hotel and event booking platform.",
+    keywords: "about StayVida, our story, team, mission, hotel booking platform",
+  });
   return (
     <div className="min-h-screen bg-neutral-50 overflow-hidden text-neutral-900">
       {/* Immersive Hero Section */}

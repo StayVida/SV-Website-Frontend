@@ -5,6 +5,7 @@ import FilterSidebar from "@/components/searchResult/FilterSidebar"
 import Results from "@/components/searchResult/Results"
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api"
 import ResultsSkeleton from "@/skeleton/ResultsSkeleton"
+import usePageSEO from "@/hooks/usePageSEO"
 
 interface SearchData {
   destination: string
@@ -48,6 +49,11 @@ function SearchResult() {
   const [hotels, setHotels] = useState<ApiHotel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  usePageSEO({
+    title: params.destination ? `Hotels in ${params.destination}` : "Hotels",
+    description: `Browse and book the best hotels in ${params.destination || "India"} on StayVida. Find great deals on stays for business or leisure.`,
+  });
 
   // Filter state (example, can be expanded)
   const [maxPrice, setMaxPrice] = useState<number>(12000);

@@ -13,9 +13,16 @@ import ExploreEvent from "@/components/homePage/ExploreEvent";
 import PopularVenues from "@/components/homePage/PopularVenues";
 import TestimonialForEvent from "@/components/homePage/TestimonialForEvent";
 import WhyChooseEvent from "@/components/homePage/WhyChooseEvent";
+import usePageSEO from "@/hooks/usePageSEO";
 
 function HomePage() {
+  usePageSEO({
+    title: "Home",
+    description: "StayVida — discover local hotels and event-friendly venues across India. Book your perfect stay or plan your next event in minutes.",
+    keywords: "hotel booking India, event venues, stayvida, travel India, book hotel online",
+  });
   const [activeForm,setActiveForm] = useState("hotel")
+
   return (
     <>
    <section className="relative py-8 sm:py-10 md:py-20 flex items-center justify-center overflow-hidden">

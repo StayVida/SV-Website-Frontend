@@ -14,6 +14,8 @@ import Contact from "./pages/Contact";
 import ProfilePage from "./pages/Profile";
 import RegisterProperty from "./pages/RegisterProperty";
 import BookingDetails from "./pages/BookingDetails";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 function ScrollToTop() {
   const location = useLocation();
@@ -42,6 +44,8 @@ function AppRoutes() {
           <Route path="/events/search" element={<SearchResultForEvent />} />
           <Route path="/hotel/:id/:checkIn/:checkOut/:adults/:children" element={<HotelDetails />} />
           <Route path="/booking/:id" element={<BookingDetails />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="*" element={<PageNotFound />} />
         </Route>
       </Routes>

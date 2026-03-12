@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
+import usePageSEO from "@/hooks/usePageSEO";
 
 interface RecommendedHotel {
   id: string;
@@ -31,6 +32,10 @@ const AVATAR_API_URL = "https://avatar.iran.liara.run/public";
 const BOOKINGS_ENDPOINT = "/api/profile/history";
 
 const ProfilePage = () => {
+  usePageSEO({
+    title: "My Profile",
+    description: "Manage your StayVida account, view booking history, and discover personalised hotel recommendations.",
+  });
   const { authData, logout } = useAuth();
   const navigate = useNavigate();
 

@@ -9,6 +9,7 @@ import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 import LocationsSkeleton from "@/skeleton/LocationsSkeleton";
 import { LocationCard } from "@/components/homePage/LocationCard";
 import { getLocations, type LocationData } from "@/api/hotelsApi";
+import usePageSEO from "@/hooks/usePageSEO";
 
 interface SearchData {
   destination: string;
@@ -34,6 +35,11 @@ const getDefaultDates = () => {
 };
 
 function HotelsPages() {
+  usePageSEO({
+    title: "Hotels",
+    description: "Browse and book the best hotels across India on StayVida. Find great deals on stays for business or leisure.",
+    keywords: "hotels India, book hotel, hotel deals, StayVida hotels",
+  });
   const navigate = useNavigate();
 
   // Search data state

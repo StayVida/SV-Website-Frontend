@@ -5,6 +5,7 @@ import EventFilterSidebar from "@/components/searchResult/EventFilterSidebar";
 import EventResults from "@/components/searchResult/EventResults";
 import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 import ResultsSkeleton from "@/skeleton/ResultsSkeleton";
+import usePageSEO from "@/hooks/usePageSEO";
 
 interface SearchData {
   destination: string;
@@ -66,6 +67,14 @@ function SearchResultForEvent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const eventTypeDisplay = searchData.eventType || "Event";
+  const destinationDisplay = searchData.destination || "India";
+
+  usePageSEO({
+    title: `${eventTypeDisplay} Venues in ${destinationDisplay}`,
+    description: `Discover and book ${eventTypeDisplay.toLowerCase()}-friendly venues in ${destinationDisplay} with StayVida. Plan your perfect event today.`,
+  });
+
   // Filter state
   const [maxPrice, setMaxPrice] = useState<number>(300000);
   const [eventTypes, setEventTypes] = useState<string[]>([]);
@@ -83,7 +92,7 @@ function SearchResultForEvent() {
     if (isoDateRegex.test(dateStr)) {
       return dateStr;
     }
-    
+
     try {
       const parts = dateStr.trim().split(' ');
       if (parts.length < 2) {
@@ -92,7 +101,7 @@ function SearchResultForEvent() {
 
       const day = parseInt(parts[0], 10);
       const monthStr = parts[1].toLowerCase();
-      
+
       const monthMap: { [key: string]: number } = {
         'jan': 0, 'january': 0,
         'feb': 1, 'february': 1,
@@ -115,7 +124,7 @@ function SearchResultForEvent() {
 
       const currentYear = new Date().getFullYear();
       const date = new Date(currentYear, month, day);
-      
+
       if (isNaN(date.getTime())) {
         throw new Error("Invalid date");
       }
@@ -123,11 +132,11 @@ function SearchResultForEvent() {
       if (date < new Date()) {
         date.setFullYear(currentYear + 1);
       }
-      
+
       const year = date.getFullYear();
       const monthNum = String(date.getMonth() + 1).padStart(2, '0');
       const dayNum = String(date.getDate()).padStart(2, '0');
-      
+
       return `${year}-${monthNum}-${dayNum}`;
     } catch (error) {
       console.error("Date parsing error:", error, "for date:", dateStr);
@@ -195,7 +204,7 @@ function SearchResultForEvent() {
         }
 
         const result = await response.json();
-        
+
         if (result.status === 200 && Array.isArray(result.data)) {
           const mappedEvents: Event[] = result.data.map((item: ApiEventResponse) => ({
             id: item.event.event_ID,
@@ -237,16 +246,16 @@ function SearchResultForEvent() {
     // Price filter (one directional: 0 to maxPrice)
     const price = event.pricePerEvent || 0;
     if (price > maxPrice) return false;
-    
+
     // Event type filter
     if (eventTypes.length > 0 && !eventTypes.includes(event.type)) return false;
-    
+
     // Amenities filter
     if (
       amenities.length > 0 &&
       !amenities.every(a => event.amenities.some((am) => am.name === a))
     ) return false;
-    
+
     return true;
   });
 

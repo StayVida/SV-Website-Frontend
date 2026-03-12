@@ -5,6 +5,7 @@ import { href, NavLink, useNavigate } from "react-router-dom";
 import AuthDialog from "@/components/auth/AuthDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import logo from "@/assets/zrnpmtooi6sdhorey8qh.webp";
 
 const NavBar = () => {
   const { isAuthenticated, authData, logout } = useAuth();
@@ -37,16 +38,17 @@ const NavBar = () => {
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-gray-200">
-      <nav className="mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="mx-auto px-4 sm:px-6 lg:px-8 md:py-2">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Home className="w-5 h-5" />
-              </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">StayVida</span>
-            </div>
+            <NavLink to="/" className="flex-shrink-0">
+              <img
+                src={logo}
+                alt="StayVida"
+                className="h-12 md:h-15 w-auto object-contain"
+              />
+            </NavLink>
           </div>
 
           {/* Desktop Navigation */}

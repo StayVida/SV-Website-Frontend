@@ -18,6 +18,7 @@ import {
   useAddEventPackage,
   useRegisterRoom
 } from "@/hooks/useLookups";
+import usePageSEO from "@/hooks/usePageSEO";
 
 const generateId = () => Math.random().toString(36).slice(2, 11);
 
@@ -83,6 +84,11 @@ const validateImage = (file: File): Promise<{ valid: boolean; error?: string }> 
 };
 
 const RegisterProperty = () => {
+  usePageSEO({
+    title: "Register Your Property",
+    description: "List your hotel or event venue on StayVida. Reach thousands of travellers and event planners across India.",
+    keywords: "register hotel, list property, hotel owner StayVida",
+  });
   const [currentStep, setCurrentStep] = useState(1);
   const [name, setName] = useState("");
   const [type, setType] = useState(propertyTypes[0]);
