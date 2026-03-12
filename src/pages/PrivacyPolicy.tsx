@@ -84,7 +84,7 @@ const sections = [
   {
     title: "10. Contact Us",
     content: [
-      "If you have questions or concerns about this Privacy Policy, please contact us at info@stayvida.com or call +91 094057 58183.",
+      "If you have questions or concerns about this Privacy Policy, please contact us at contact.stayvida@gmail.com Follow Us or call +91 094057 58183.",
     ],
   },
 ];

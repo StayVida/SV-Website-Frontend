@@ -44,7 +44,7 @@ const sections = [
       "Cancellation policies vary by property and event. Please review the specific policy before confirming your booking.",
       "Refunds, where applicable, will be processed within 7–14 business days to the original payment method.",
       "StayVida's convenience fee, if charged, is non-refundable unless the cancellation is due to our error.",
-      "In case of a dispute regarding a refund, please contact our support team at info@stayvida.com.",
+      "In case of a dispute regarding a refund, please contact our support team at contact.stayvida@gmail.com Follow Us or call +91 094057 58183.",
     ],
   },
   {
@@ -90,7 +90,7 @@ const sections = [
   {
     title: "11. Contact Us",
     content: [
-      "For any questions regarding these Terms and Conditions, please reach out to us at info@stayvida.com or call +91 094057 58183.",
+      "For any questions regarding these Terms and Conditions, please reach out to us at contact.stayvida@gmail.com Follow Us or call +91 094057 58183.",
     ],
   },
 ];
