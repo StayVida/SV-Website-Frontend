@@ -44,7 +44,7 @@ export function LocationCard({ city, onClick }: LocationCardProps) {
           alt={city.location}
           className="w-full h-full object-cover transition-transform duration-300"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-opacity"></div>
+        {/* <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-opacity"></div> */}
 
         <div className="absolute top-3 right-3 z-10">
           <div className="flex items-center bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-sm font-medium text-gray-700">

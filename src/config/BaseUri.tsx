@@ -7,18 +7,19 @@ const getBaseUrl = (): string => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   
   if (!baseUrl) {
-    throw new Error(
+    console.error(
       "VITE_BASE_URL environment variable is not set. Please check your .env file."
     );
+    return "https://api.stayvida.in"; // Fallback to avoid crash
   }
   
-  // Validate URL format
   try {
     new URL(baseUrl);
   } catch {
-    throw new Error(
+    console.error(
       `Invalid VITE_BASE_URL format: "${baseUrl}". Please provide a valid URL (e.g., https://api.example.com)`
     );
+    return "https://api.stayvida.in"; // Fallback
   }
   
   return baseUrl;

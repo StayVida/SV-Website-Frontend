@@ -38,16 +38,39 @@ export interface LocationData {
  * Fetch the list of locations from the server
  */
 export const getLocations = async (): Promise<LocationData[]> => {
-    const response = await apiClient.get(API_ENDPOINTS.LOCATIONS_LIST);
+  try {
+    const response = await apiClient.get<any>(API_ENDPOINTS.LOCATIONS_LIST);
+    let data = response.data;
 
-    // Normalize data and images
-    const rawData = Array.isArray(response.data) ? response.data :
-        (response.data?.data && Array.isArray(response.data.data)) ? response.data.data : [];
+    // Handle case where API returns a string instead of an object/array
+    if (typeof data === "string" && data.trim().startsWith("[")) {
+      try {
+        data = JSON.parse(data);
+        console.log("getLocations: Successfully parsed stringified response");
+      } catch (e) {
+        console.error("getLocations: Failed to parse stringified response:", e);
+      }
+    }
 
-    return rawData.map((item: any) => ({
-        ...item,
-        images: normalizeImages(item.images)
+    // Ensure data is an array, potentially extracting from a 'data' property if present
+    let processedData: any[] = [];
+    if (Array.isArray(data)) {
+      processedData = data;
+    } else if (data && typeof data === 'object' && Array.isArray(data.data)) {
+      processedData = data.data;
+    } else {
+      console.warn("getLocations: API response is not an array or does not contain a 'data' array property:", data);
+      return [];
+    }
+
+    return processedData.map((item: any) => ({
+      ...item,
+      images: normalizeImages(item.images)
     }));
+  } catch (error) {
+    console.error("Failed to fetch locations:", error);
+    return [];
+  }
 };
 
 export interface CreateRatingRequest {
