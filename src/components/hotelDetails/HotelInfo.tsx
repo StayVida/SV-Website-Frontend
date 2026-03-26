@@ -9,7 +9,7 @@ interface HotelInfoProps {
 export default function HotelInfo({ hotel }: HotelInfoProps) {
   return (
     <div className="mb-6 sm:mb-8">
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4 space-y-4 lg:space-y-0">
+      <div className="flex flex-col lg:items-start lg:justify-between mb-4 space-y-4 lg:space-y-0">
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 break-words">
             {hotel.name}

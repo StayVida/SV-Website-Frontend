@@ -6,6 +6,7 @@ import AuthDialog from "@/components/auth/AuthDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import logo from "@/assets/zrnpmtooi6sdhorey8qh.webp";
+import { DASHBOARD_URL } from "@/config/api";
 
 const NavBar = () => {
   const { isAuthenticated, authData, logout } = useAuth();
@@ -202,7 +203,7 @@ const NavBar = () => {
                     variant="default"
                     size="sm"
                     onClick={() => {
-                      window.location.href = "https://sv-hotel-owner-dashboard.vercel.app/";
+                      window.location.href = DASHBOARD_URL;
                     }}
                   >
                     My Dashboard
