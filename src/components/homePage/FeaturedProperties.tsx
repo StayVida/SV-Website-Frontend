@@ -157,7 +157,7 @@ function FeaturedProperties() {
                       <span className="text-gray-600">/night</span>
                     </div>
                     <Button className="bg-green-600 hover:bg-green-700" asChild>
-                      <Link to={getHotelLink(hotel.id)}>Book Now</Link>
+                      <Link to={getHotelLink(hotel.id)}>View Details</Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -210,7 +210,7 @@ function FeaturedProperties() {
                       <span className="text-gray-600">/night</span>
                     </div>
                     <Button className="bg-green-600 hover:bg-green-700" asChild>
-                      <Link to={getHotelLink(hotel.id)}>Book Now</Link>
+                      <Link to={getHotelLink(hotel.id)}>View Details</Link>
                     </Button>
                   </div>
                 </CardContent>

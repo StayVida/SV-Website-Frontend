@@ -1,5 +1,5 @@
 import { useState } from "react"
-import heroBg from "@/assets/hero-bg.jpg";
+import heroVideo from "/video/hero-bg.webm";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import BookingSearchForm from "@/components/homePage/BookingSearchForm";
@@ -25,18 +25,25 @@ function HomePage() {
 
   return (
     <>
-   <section className="relative py-8 sm:py-10 md:py-20 flex items-center justify-center overflow-hidden">
-      {/* Hero Background */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url(${heroBg})`,
-        }}
-      >
+   <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
+      {/* Hero Background Video */}
+      <link rel="preload" as="video" href={heroVideo} type="video/webm" />
+      <div className="absolute inset-0">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover"
+        >
+          <source src={heroVideo} type="video/webm" />
+        </video>
+        {/* Overlay */}
         <div
           className="absolute inset-0 w-full"
           style={{
-            background: "linear-gradient(135deg, hsl(240 16% 12% / 0.9), hsl(240 16% 12% / 0.7))"
+            background: "linear-gradient(135deg, hsl(240 16% 12% / 0.7), hsl(240 16% 12% / 0.5))"
           }}
         ></div>
       </div>

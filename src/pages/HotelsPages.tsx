@@ -2,13 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import BookingSearchForm from "@/components/homePage/BookingSearchForm";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Hotel } from "lucide-react";
-import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
 import LocationsSkeleton from "@/skeleton/LocationsSkeleton";
 import { LocationCard } from "@/components/homePage/LocationCard";
-import { getLocations, type LocationData } from "@/api/hotelsApi";
+import { getLocations } from "@/api/hotelsApi";
 import usePageSEO from "@/hooks/usePageSEO";
 
 interface SearchData {
@@ -84,7 +81,7 @@ function HotelsPages() {
               Discover amazing hotels and accommodations
             </p>
           </div>
-          <BookingSearchForm onSearch={handleSearch} />
+          <BookingSearchForm onSearch={handleSearch} variant="light" />
         </div>
       </section>
 

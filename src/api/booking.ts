@@ -35,6 +35,7 @@ export interface CreateBookingRequest {
     phoneNo: string;
     checkIn: string;
     checkOut: string;
+    code?: string;
 }
 
 export interface CreateBookingResponse {
@@ -131,4 +132,11 @@ export const getBookingDetails = async (bookingId: string): Promise<BookingDetai
     const url = API_ENDPOINTS.GET_BOOKING_DETAILS.replace(':bookingId', bookingId);
     const response = await apiClient.get(url);
     return response.data;
+};
+
+export const validatePromoCode = async (code: string): Promise<boolean> => {
+    const response = await apiClient.get('/booking/validate-code', {
+        params: { Code: code }
+    });
+    return response.data.valid;
 };
