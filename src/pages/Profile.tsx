@@ -127,12 +127,14 @@ const ProfilePage = () => {
           destination: item?.destination ?? item?.city ?? "Unknown destination",
           rating: typeof item?.rating === "number" ? item.rating : 0,
           price:
-            typeof item?.price === "number"
+            typeof item?.["base price"] === "number"
+              ? item["base price"]
+              : typeof item?.price === "number"
               ? item.price
               : Array.isArray(item?.rooms) && typeof item?.rooms[0]?.price === "number"
                 ? item.rooms[0].price
                 : undefined,
-          imageUrl: item?.imageUrl ?? item?.images?.[0] ?? null,
+          imageUrl: item?.image ?? item?.imageUrl ?? item?.images?.[0] ?? null,
         }));
 
         setRecommendedHotels(normalized);

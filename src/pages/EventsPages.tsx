@@ -159,7 +159,7 @@ function EventsPages() {
               Discover amazing venues for your special occasions
             </p>
           </div>
-          <EventBookingForm onSearch={handleSearch} />
+          <EventBookingForm onSearch={handleSearch} variant="light" />
         </div>
       </section>
 

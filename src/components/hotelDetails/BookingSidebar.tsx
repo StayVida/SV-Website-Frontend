@@ -21,8 +21,10 @@ import {
   createBooking,
   createRazorpayOrder,
   verifyRazorpayPayment,
+  validatePromoCode,
   type LockRoomResponse,
-  type CreateBookingResponse
+  type CreateBookingResponse,
+  type CreateBookingRequest
 } from "@/api/booking";
 import { createProfile } from "@/api/auth";
 
@@ -81,6 +83,10 @@ export default function BookingSidebar({
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [lockData, setLockData] = useState<LockRoomResponse | null>(null);
+  const [showPromoInput, setShowPromoInput] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+  const [promoMessage, setPromoMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
   // Modification dialog state
   const [isModifyOpen, setIsModifyOpen] = useState(false);
@@ -219,7 +225,7 @@ export default function BookingSidebar({
       });
 
       // 2. Create Booking
-      const bookingResponse = await createBookingMutation.mutateAsync({
+      const bookingData: CreateBookingRequest = {
         lockRoomId: lockResponse.roomId, // User example: "roomId": "2NJK" mapped to lockRoomId
         adults: parseInt(adults),
         children: parseInt(children),
@@ -228,8 +234,11 @@ export default function BookingSidebar({
         countryCode: "+91", // Hardcoded for now or add input
         phoneNo: phoneNumber,
         checkIn,
-        checkOut
-      });
+        checkOut,
+        ...(promoMessage?.type === 'success' && promoCode.trim() ? { code: promoCode.trim() } : {})
+      };
+
+      const bookingResponse = await createBookingMutation.mutateAsync(bookingData);
 
       if (paymentMethod === "Local") {
         setBookingSuccess(true);
@@ -303,39 +312,6 @@ export default function BookingSidebar({
           <h3 className="text-xl font-bold mb-6">Book Your Stay</h3>
 
           <div className="space-y-4 mb-6">
-            {/* Guest Information */}
-            <div className="space-y-4 mb-6">
-              <h4 className="text-lg font-semibold text-gray-900">Guest Information</h4>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    value={guestName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGuestName(e.target.value)}
-                    className="pl-10"
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    value={phoneNumber}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(e.target.value)}
-                    className="pl-10"
-                    placeholder="Enter your phone number"
-                    type="tel"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-medium text-gray-700">Stay Details</label>
@@ -435,6 +411,40 @@ export default function BookingSidebar({
                 </div>
               </div>
             </div>
+            {/* Guest Information */}
+            <div className="space-y-4 mb-6">
+              <h4 className="text-lg font-semibold text-gray-900">Guest Information</h4>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    value={guestName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGuestName(e.target.value)}
+                    className="pl-10"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    value={phoneNumber}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(e.target.value)}
+                    className="pl-10"
+                    placeholder="Enter your phone number"
+                    type="tel"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            
           </div>
 
 
@@ -475,6 +485,61 @@ export default function BookingSidebar({
               <span className="text-gray-700">Platform Charges</span>
               <span className="font-medium">₹{platformCharges.toLocaleString()}</span>
             </div>
+
+            {/* Promo Code Section */}
+            <div className="py-2">
+              {!showPromoInput ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPromoInput(true)}
+                  className="text-sm font-medium text-primary hover:underline flex items-center bg-transparent"
+                >
+                  Apply code
+                </button>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Input
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      placeholder="Enter promo code"
+                      className="h-9 text-sm"
+                      disabled={isApplyingPromo}
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="h-9 px-4" 
+                      disabled={isApplyingPromo || !promoCode.trim()}
+                      onClick={async () => {
+                        setIsApplyingPromo(true);
+                        setPromoMessage(null);
+                        try {
+                          const isValid = await validatePromoCode(promoCode.trim());
+                          if (isValid) {
+                            setPromoMessage({ text: "Promo code applied successfully!", type: 'success' });
+                          } else {
+                            setPromoMessage({ text: "Invalid promo code.", type: 'error' });
+                          }
+                        } catch (err) {
+                          setPromoMessage({ text: "Error validating code.", type: 'error' });
+                        } finally {
+                          setIsApplyingPromo(false);
+                        }
+                      }}
+                    >
+                      {isApplyingPromo ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+                    </Button>
+                  </div>
+                  {promoMessage && (
+                    <span className={`text-xs ${promoMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                      {promoMessage.text}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="h-px bg-gray-200" />
             <div className="flex justify-between text-lg font-bold">
               <span>Total Price</span>
