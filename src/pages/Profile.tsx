@@ -335,7 +335,6 @@ const ProfilePage = () => {
                 <h1 className="text-2xl font-semibold text-gray-900">{user.email}</h1>
                 <p className="mt-1 text-sm text-gray-600">User ID: {user.userID}</p>
                 <p className="mt-1 text-sm text-gray-600">{formattedRole}</p>
-                {avatarError && <p className="mt-2 text-sm text-red-600">{avatarError}</p>}
               </div>
             </div>
             <div className="flex flex-col gap-2 text-sm text-gray-600">
