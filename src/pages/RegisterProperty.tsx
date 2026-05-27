@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
 import apiClient from "@/api/axios";
 import {
   propertyTypes,
@@ -83,6 +84,34 @@ const validateImage = (file: File): Promise<{ valid: boolean; error?: string }> 
   });
 };
 
+const step1Schema = z.object({
+  name: z.string().min(2, "Property Name must be at least 2 characters."),
+  destination: z.string().min(1, "Destination/City is required."),
+  description: z.string().min(10, "Description must be at least 10 characters."),
+  countryCode: z.string().min(1, "Country Code is required."),
+  phoneNumber: z.string().regex(/^\d{10}$/, "Phone Number must be exactly 10 digits."),
+  images: z.array(z.any()).min(1, "At least one property image must be uploaded."),
+});
+
+const step2Schema = z.object({
+  eventPackages: z.array(
+    z.object({
+      eventType: z.string().min(1, "Event type is required."),
+      amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Amount must be a positive number."),
+      guestCount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Guest count must be a positive number."),
+    })
+  ),
+});
+
+const step3Schema = z.object({
+  rooms: z.array(
+    z.object({
+      roomType: z.string().min(1, "Room type is required."),
+      price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Price must be a positive number."),
+    })
+  ),
+});
+
 const RegisterProperty = () => {
   usePageSEO({
     title: "Register Your Property",
@@ -105,6 +134,37 @@ const RegisterProperty = () => {
   const [provideEvents, setProvideEvents] = useState(false);
   const [eventPackages, setEventPackages] = useState<EventPackage[]>([]);
   const [rooms, setRooms] = useState<RoomForm[]>([createRoom()]);
+  const [referralCode, setReferralCode] = useState("");
+  const [isReferralValid, setIsReferralValid] = useState<boolean | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (currentStep === 1) {
+      const res = step1Schema.safeParse({
+        name,
+        destination,
+        description,
+        countryCode,
+        phoneNumber,
+        images,
+      });
+      if (!res.success) {
+        const newErrors: Record<string, string> = {};
+        res.error.issues.forEach((issue) => {
+          const path = issue.path[0] as string;
+          const val = { name, destination, description, countryCode, phoneNumber }[path];
+          if (val || (path === "images" && images.length > 0)) {
+            newErrors[path] = issue.message;
+          }
+        });
+        setErrors(newErrors);
+      } else {
+        setErrors({});
+      }
+    } else {
+      setErrors({});
+    }
+  }, [currentStep, name, destination, description, countryCode, phoneNumber, images]);
 
 
   const propertyImagesRef = useRef<ImagePreview[]>([]);
@@ -329,25 +389,26 @@ const RegisterProperty = () => {
     }
   };
 
-  const hasValidRooms = rooms.every((room) => room.roomType.trim() && room.price.trim());
+  const isStep1Valid = useMemo(() => {
+    const res = step1Schema.safeParse({
+      name,
+      destination,
+      description,
+      countryCode,
+      phoneNumber,
+      images,
+    });
+    return res.success && (!referralCode.trim() || isReferralValid === true);
+  }, [name, destination, description, countryCode, phoneNumber, images, referralCode, isReferralValid]);
 
-  const hasEventDetails =
-    !provideEvents ||
-    (eventPackages.length > 0 &&
-      eventPackages.every(
-        (pkg) => pkg.eventType.trim() && pkg.amount.trim() && pkg.guestCount.trim()
-      ));
+  const isStep2Valid = useMemo(() => {
+    if (!provideEvents) return true;
+    return step2Schema.safeParse({ eventPackages }).success;
+  }, [provideEvents, eventPackages]);
 
-  const isStep1Valid =
-    name &&
-    destination &&
-    description &&
-    countryCode &&
-    phoneNumber &&
-    images.length > 0;
-
-  const isStep2Valid = hasEventDetails;
-  const isStep3Valid = hasValidRooms;
+  const isStep3Valid = useMemo(() => {
+    return step3Schema.safeParse({ rooms }).success;
+  }, [rooms]);
 
   const registerHotelMutation = useRegisterHotel();
   const addEventPackageMutation = useAddEventPackage();
@@ -369,7 +430,7 @@ const RegisterProperty = () => {
           console.error("Error parsing authData:", error);
         }
 
-        const data = {
+        const data: any = {
           owner_ID: ownerId,
           name,
           type,
@@ -383,6 +444,10 @@ const RegisterProperty = () => {
           longitude: longitude.toString(),
           latitude: latitude.toString(),
         };
+
+        if (referralCode && referralCode.trim() && isReferralValid === true) {
+          data.referral_code = referralCode.trim();
+        }
 
         formData.append("data", JSON.stringify(data));
         images.forEach((image) => {
@@ -522,6 +587,11 @@ const RegisterProperty = () => {
 
               provideEvents={provideEvents}
               handleProvideEventsToggle={handleProvideEventsToggle}
+              referralCode={referralCode}
+              setReferralCode={setReferralCode}
+              isReferralValid={isReferralValid}
+              setIsReferralValid={setIsReferralValid}
+              errors={errors}
             />
           )}
 

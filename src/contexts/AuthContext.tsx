@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
-interface User {
+export interface User {
   email: string;
   role: string;
   userID: number;
+  name?: string;
+  phoneNumber?: string;
 }
 
-interface AuthData {
+export interface AuthData {
   token: string;
   user: User;
 }

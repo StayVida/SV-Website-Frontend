@@ -35,6 +35,8 @@ export interface User {
   username: string;
   email: string;
   role: string;
+  name?: string;
+  phoneNumber?: string;
 }
 
 /**
@@ -164,6 +166,19 @@ export const createProfile = async (data: { name: string; phoneNumber: string })
     return response.data;
   } catch (error) {
     console.error('Create profile error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update user profile via PATCH /api/profile/Update
+ */
+export const updateProfile = async (data: { name: string; phoneNumber: string }): Promise<any> => {
+  try {
+    const response = await apiClient.patch('/api/profile/Update', data);
+    return response.data;
+  } catch (error) {
+    console.error('Update profile error:', error);
     throw error;
   }
 };
