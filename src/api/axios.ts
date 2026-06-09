@@ -82,8 +82,12 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('authData');
       localStorage.removeItem('user');
-      // You can redirect to login page here
-      // window.location.href = '/login';
+      
+      // Redirect to login if not a login request and not already on login page
+      const isLoginRequest = error.config?.url?.includes('/login') || error.config?.url?.includes('/otplogin');
+      if (!isLoginRequest && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     } else if (error.response?.status === 403) {
       console.error('Forbidden - Insufficient permissions');
     } else if (error.response?.status === 404) {

@@ -113,7 +113,7 @@ function FeaturedProperties() {
         {/* Horizontal scrollable cards for mobile */}
         <div className="flex md:hidden gap-4 overflow-x-auto pb-2 snap-x snap-mandatory -mx-2 px-4">
           {Array.isArray(featuredProperties) && featuredProperties.map((hotel) => {
-            const { fullStars } = getStarRating(hotel.rating);
+            const { fullStars } = getStarRating(hotel.rating || 0);
             return (
               <Card
                 key={hotel.id}
@@ -135,22 +135,20 @@ function FeaturedProperties() {
                     <MapPin className="w-4 h-4 text-gray-400 mr-1" />
                     <span className="text-sm text-gray-600">{hotel.destination}</span>
                   </div>
-                  {hotel.rating > 0 && (
-                    <div className="flex items-center mb-3">
-                      <div className="flex items-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`w-4 h-4 ${star <= fullStars
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-gray-300"
-                              }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="ml-2 text-sm text-gray-600">{hotel.rating.toFixed(1)}</span>
+                  <div className="flex items-center mb-3">
+                    <div className="flex items-center">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${star <= fullStars
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300"
+                            }`}
+                        />
+                      ))}
                     </div>
-                  )}
+                    <span className="ml-2 text-sm text-gray-600">{(hotel.rating || 0).toFixed(1)}</span>
+                  </div>
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-2xl font-bold">₹{Math.round(hotel["base price"])}</span>
@@ -169,7 +167,7 @@ function FeaturedProperties() {
         {/* Grid for md+ screens */}
         <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.isArray(featuredProperties) && featuredProperties.map((hotel) => {
-            const { fullStars } = getStarRating(hotel.rating);
+            const { fullStars } = getStarRating(hotel.rating || 0);
             return (
               <Card key={hotel.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative h-48">
@@ -188,22 +186,20 @@ function FeaturedProperties() {
                     <MapPin className="w-4 h-4 text-gray-400 mr-1" />
                     <span className="text-sm text-gray-600">{hotel.destination}</span>
                   </div>
-                  {hotel.rating > 0 && (
-                    <div className="flex items-center mb-3">
-                      <div className="flex items-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`w-4 h-4 ${star <= fullStars
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-gray-300"
-                              }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="ml-2 text-sm text-gray-600">{hotel.rating.toFixed(1)}</span>
+                  <div className="flex items-center mb-3">
+                    <div className="flex items-center">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${star <= fullStars
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300"
+                            }`}
+                        />
+                      ))}
                     </div>
-                  )}
+                    <span className="ml-2 text-sm text-gray-600">{(hotel.rating || 0).toFixed(1)}</span>
+                  </div>
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-2xl font-bold">₹{Math.round(hotel["base price"])}</span>
