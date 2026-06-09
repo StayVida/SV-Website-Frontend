@@ -26,7 +26,6 @@ import {
   type CreateBookingResponse,
   type CreateBookingRequest
 } from "@/api/booking";
-import { createProfile } from "@/api/auth";
 
 const parseToISODate = (dateStr: string) => {
   if (!dateStr) return "";
@@ -143,13 +142,7 @@ export default function BookingSidebar({
   // Let's estimate total for display before locking using room data.
   const estimatedTotal = selectedRoomData?.totalAmount ?? 0;
 
-  // Mutation: Create Profile
-  const createProfileMutation = useMutation({
-    mutationFn: createProfile,
-    onError: (error: any) => {
-      setBookingError(error.message || "Failed to create profile");
-    }
-  });
+
 
   // Mutation: Lock Room
   const lockRoomMutation = useMutation({
@@ -209,12 +202,6 @@ export default function BookingSidebar({
     setBookingError(null);
 
     try {
-      // 0. Create/Update Profile
-      await createProfileMutation.mutateAsync({
-        name: guestName,
-        phoneNumber: phoneNumber
-      });
-
       // 1. Lock Room
       const lockResponse = await lockRoomMutation.mutateAsync({
         hotelId: hotel.id,
@@ -296,7 +283,7 @@ export default function BookingSidebar({
     }
   };
 
-  const isProcessing = createProfileMutation.isPending || lockRoomMutation.isPending || createBookingMutation.isPending || razorpayOrderMutation.isPending || verifyPaymentMutation.isPending;
+  const isProcessing = lockRoomMutation.isPending || createBookingMutation.isPending || razorpayOrderMutation.isPending || verifyPaymentMutation.isPending;
 
   // Update payment method if hotel config changes
   useEffect(() => {

@@ -158,19 +158,6 @@ export const saveUserData = (userData: User, token: string): void => {
 };
 
 /**
- * Create or update user profile
- */
-export const createProfile = async (data: { name: string; phoneNumber: string }): Promise<any> => {
-  try {
-    const response = await apiClient.post('/api/profile/create', data);
-    return response.data;
-  } catch (error) {
-    console.error('Create profile error:', error);
-    throw error;
-  }
-};
-
-/**
  * Update user profile via PATCH /api/profile/Update
  */
 export const updateProfile = async (data: { name: string; phoneNumber: string }): Promise<any> => {
