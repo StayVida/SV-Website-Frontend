@@ -78,11 +78,11 @@ export const RoomDetailsForm = ({
                   />
                 </div>
                 <div>
-                  <Label className="text-sm text-gray-700 font-medium">Room Number *</Label>
+                  <Label className="text-sm text-gray-700 font-medium">Room Numbers (comma-separated) *</Label>
                   <Input
                     value={room.roomNumber}
                     onChange={(e) => updateRoomField(room.id, "roomNumber", e.target.value)}
-                    placeholder="e.g. 101"
+                    placeholder="e.g. 101, 102, 103"
                     required
                     className="mt-2 h-12"
                   />
