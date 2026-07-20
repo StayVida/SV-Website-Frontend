@@ -372,7 +372,7 @@ const RegisterProperty = () => {
         const roomNumbersArray = room.roomNumber
           ? room.roomNumber.split(",").map((n) => n.trim()).filter(Boolean)
           : ["0"];
-        formData.append("roomNumber", JSON.stringify(roomNumbersArray));
+        formData.append("roomNumbers", JSON.stringify(roomNumbersArray));
 
         room.images.forEach((image) => {
           if (image.file) {
