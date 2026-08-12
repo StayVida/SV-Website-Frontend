@@ -22,7 +22,7 @@ export interface RoomForm {
   bedCount: string;
   price: string;
   images: ImagePreview[];
-  roomNumber: string;
+  roomNumbers: string;
 }
 
 export interface Amenity {
