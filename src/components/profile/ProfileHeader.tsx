@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Shield, LogOut, User as UserIcon, Phone, Loader2, Edit2, CheckCircle2 } from "lucide-react";
+import { Mail, Shield, LogOut, User as UserIcon, Phone, Loader2, Edit2, CheckCircle2, Wallet } from "lucide-react";
 import { z } from "zod";
 import type { User } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ interface ProfileHeaderProps {
   formattedRole: string;
   onLogout: () => void;
   onProfileUpdate: (newName: string, newPhoneNumber: string) => void;
+  walletBalance?: number | null;
 }
 
 const profileSchema = z.object({
@@ -43,6 +44,7 @@ export const ProfileHeader = ({
   formattedRole,
   onLogout,
   onProfileUpdate,
+  walletBalance,
 }: ProfileHeaderProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState(user.name || "");
@@ -240,6 +242,32 @@ export const ProfileHeader = ({
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Logout</span>
             </Button>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 font-semibold h-11 px-3">
+                  <Wallet className="h-4 w-4" />
+                  <span className="hidden sm:inline">Wallet</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[380px] rounded-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Wallet className="w-5 h-5 text-blue-600" />
+                    Your StayVida Wallet
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col items-center justify-center p-6 space-y-4">
+                  <p className="text-gray-500 text-sm text-center">Your available balance from cancelled bookings.</p>
+                  <div className="text-4xl font-extrabold text-blue-600">
+                    ₹{walletBalance !== undefined && walletBalance !== null ? walletBalance.toFixed(2) : "0.00"}
+                  </div>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-xl text-xs text-blue-800 text-center border border-blue-100">
+                  This balance will be automatically applied to your next eligible booking.
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </CardContent>

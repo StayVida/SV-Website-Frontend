@@ -140,3 +140,21 @@ export const validatePromoCode = async (code: string): Promise<boolean> => {
     });
     return response.data.valid;
 };
+
+export interface WalletResponse {
+    status: number;
+    message: string;
+    data: {
+        balance: number;
+    };
+}
+
+export const getUserWallet = async (): Promise<WalletResponse> => {
+    const response = await apiClient.get('/api/profile/wallet');
+    return response.data;
+};
+
+export const cancelBooking = async (bookingId: string): Promise<any> => {
+    const response = await apiClient.post(`/api/profile/${bookingId}/cancel`);
+    return response.data;
+};

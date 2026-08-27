@@ -7,6 +7,7 @@ import usePageSEO from "@/hooks/usePageSEO";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { RecommendedHotels, type RecommendedHotel } from "@/components/profile/RecommendedHotels";
 import { PreviousBookings, type Booking } from "@/components/profile/PreviousBookings";
+import { getUserWallet } from "@/api/booking";
 
 const AVATAR_API_URL = "https://api.dicebear.com/9.x/toon-head/svg?seed=Sophie";
 const BOOKINGS_ENDPOINT = "/api/profile/history";
@@ -31,6 +32,9 @@ const ProfilePage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(false);
   const [bookingsError, setBookingsError] = useState<string | null>(null);
+
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [isLoadingWallet, setIsLoadingWallet] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -197,6 +201,24 @@ const ProfilePage = () => {
     fetchBookingHistory();
   }, [authData?.token]);
 
+  useEffect(() => {
+    const fetchWallet = async () => {
+      if (!authData?.token) return;
+      setIsLoadingWallet(true);
+      try {
+        const res = await getUserWallet();
+        if (res?.data?.balance !== undefined) {
+          setWalletBalance(res.data.balance);
+        }
+      } catch (e) {
+        console.error("Failed to fetch wallet", e);
+      } finally {
+        setIsLoadingWallet(false);
+      }
+    };
+    fetchWallet();
+  }, [authData?.token]);
+
   if (!authData) {
     return (
       <section className="min-h-[60vh] flex items-center justify-center px-4">
@@ -224,8 +246,8 @@ const ProfilePage = () => {
           formattedRole={formattedRole}
           onLogout={handleLogout}
           onProfileUpdate={handleProfileUpdate}
+          walletBalance={walletBalance}
         />
-
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-7">
           <div className="lg:col-span-4 space-y-6">
             <RecommendedHotels
