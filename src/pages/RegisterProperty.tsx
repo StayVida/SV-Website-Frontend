@@ -369,10 +369,8 @@ const RegisterProperty = () => {
         formData.append("maxChildren", room.maxChildren || "0");
         formData.append("bedCount", room.bedCount || "0");
         formData.append("price", room.price || "0");
-        const roomNumberArray = room.roomNumber
-          ? room.roomNumber.split(",").map((n) => n.trim()).filter(Boolean)
-          : ["0"];
-        formData.append("roomNumber", JSON.stringify(roomNumberArray));
+        const roomNumberVal = room.roomNumber ? room.roomNumber.trim() : "0";
+        formData.append("roomNumber", roomNumberVal);
 
         room.images.forEach((image) => {
           if (image.file) {

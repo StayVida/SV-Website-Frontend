@@ -223,7 +223,7 @@ export default function BookingDetails() {
                 </div>
                 <div className="pt-4 border-t">
                   <p className="text-sm text-gray-500">Room Details</p>
-                  <p className="font-medium">Room {data.RoomNumber}</p>
+                  {/* Room number hidden as per request */}
                   <p className="text-sm text-gray-600">Room ID: {data.room_ID}</p>
                 </div>
               </CardContent>

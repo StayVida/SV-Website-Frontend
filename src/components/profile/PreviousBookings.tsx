@@ -141,12 +141,7 @@ export const PreviousBookings = ({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {typeof booking.roomNumber === "number" && (
-          <div className="flex items-center text-sm text-gray-600 font-medium">
-            <MapPin className="mr-2 h-4 w-4 text-gray-400 shrink-0" />
-            <span>Room {booking.roomNumber}</span>
-          </div>
-        )}
+        {/* Room number hidden as per request */}
         <div className="flex items-start text-sm text-gray-600">
           <CalendarCheck className="mr-2 h-4.5 w-4.5 text-gray-400 shrink-0 mt-0.5" />
           <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-2">
