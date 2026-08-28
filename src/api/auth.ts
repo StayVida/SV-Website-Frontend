@@ -77,7 +77,7 @@ export const loginWithGoogle = async (oauthToken: string): Promise<LoginResponse
  */
 export const requestOtp = async (email: string): Promise<void> => {
   try {
-    const response = await apiClient.post('/otplogin/verify-otp', {
+    const response = await apiClient.post('/otplogin/get-otp', {
       username: '',
       email: email,
     });
