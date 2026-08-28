@@ -115,7 +115,7 @@ const NavBar = () => {
                 <Button
                   variant="default"
                   size="lg"
-                  onClick={() => window.location.href = "https://sv-hotel-owner-dashboard.vercel.app/"}
+                  onClick={() => window.location.href = DASHBOARD_URL}
                 >
                   My Dashboard
                 </Button>
