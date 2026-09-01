@@ -25,7 +25,7 @@ function HomePage() {
 
   return (
     <>
-   <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
+   <section className="relative min-h-[100vh] flex items-end md:items-center justify-center overflow-hidden pb-12 md:pb-0 pt-24 md:pt-0">
       {/* Hero Background Video */}
       <link rel="preload" as="video" href={heroVideo} type="video/webm" />
       <div className="absolute inset-0">

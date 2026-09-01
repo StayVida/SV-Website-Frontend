@@ -52,9 +52,9 @@ const BookingSearchForm = ({ onSearch, variant = "glass" }: BookingSearchFormPro
   return (
     <form onSubmit={handleSearch}>
       <Card className={isLight ? "bg-white p-2 sm:p-4 md:p-6 rounded-2xl shadow-sm border border-gray-200" : "bg-white/10 backdrop-blur-xl p-2 sm:p-4 md:p-6 rounded-2xl shadow-2xl border border-white/20"}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4 items-end">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4 items-end">
           {/* Destination */}
-          <div className="lg:col-span-1">
+          <div className="col-span-2 lg:col-span-1">
             <Label htmlFor="destination" className={isLight ? "text-sm md:text-base font-medium text-gray-700 mb-2 block" : "text-sm md:text-base font-medium text-white/90 mb-2 block"}>
               Destination
             </Label>
@@ -73,7 +73,7 @@ const BookingSearchForm = ({ onSearch, variant = "glass" }: BookingSearchFormPro
           </div>
 
           {/* Check In */}
-          <div className="lg:col-span-1">
+          <div className="col-span-1 lg:col-span-1">
             <Label htmlFor="checkin" className={isLight ? "text-sm md:text-base font-medium text-gray-700 mb-2 block" : "text-sm md:text-base font-medium text-white/90 mb-2 block"}>
               Check In
             </Label>
@@ -92,7 +92,7 @@ const BookingSearchForm = ({ onSearch, variant = "glass" }: BookingSearchFormPro
           </div>
 
           {/* Check Out */}
-          <div className="lg:col-span-1">
+          <div className="col-span-1 lg:col-span-1">
             <Label htmlFor="checkout" className={isLight ? "text-sm md:text-base font-medium text-gray-700 mb-2 block" : "text-sm md:text-base font-medium text-white/90 mb-2 block"}>
               Check Out
             </Label>
@@ -111,7 +111,7 @@ const BookingSearchForm = ({ onSearch, variant = "glass" }: BookingSearchFormPro
           </div>
 
           {/* Persons */}
-          <div className="lg:col-span-1">
+          <div className="col-span-1 lg:col-span-1">
             <Label htmlFor="adults" className={isLight ? "text-sm font-medium text-gray-700 mb-2 block" : "text-sm font-medium text-white/90 mb-2 block"}>
               Persons
             </Label>
@@ -132,7 +132,7 @@ const BookingSearchForm = ({ onSearch, variant = "glass" }: BookingSearchFormPro
           </div>
 
           {/* Children */}
-          <div className="lg:col-span-1">
+          <div className="col-span-1 lg:col-span-1">
             <Label htmlFor="children" className={isLight ? "text-sm font-medium text-gray-700 mb-2 block" : "text-sm font-medium text-white/90 mb-2 block"}>
               Children
             </Label>
@@ -153,7 +153,7 @@ const BookingSearchForm = ({ onSearch, variant = "glass" }: BookingSearchFormPro
           </div>
 
           {/* Search Button */}
-          <div className="lg:col-span-1 flex items-end">
+          <div className="col-span-2 lg:col-span-1 flex items-end">
             <Button type="submit" variant="booking" className="w-full h-10 md:h-12 text-sm md:text-base shadow-lg hover:shadow-primary/50 transition-all duration-300">
               Search
             </Button>

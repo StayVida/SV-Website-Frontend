@@ -58,23 +58,7 @@ const NavBar = () => {
     >
       <nav className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button
-              variant="default"
-              size="sm"
-              className="bg-primary border-1 border-primary"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </Button>
-          </div>
-
-          {/* Logo (Right side on Desktop) */}
+          {/* Logo */}
           <div 
             className={`flex items-center transition-all duration-500 transform ${
               scrolled ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"
@@ -87,6 +71,45 @@ const NavBar = () => {
                 className="h-12 md:h-15 w-auto object-contain"
               />
             </NavLink>
+          </div>
+
+          {/* Mobile Right Side: Profile & Menu */}
+          <div className="md:hidden flex items-center space-x-3">
+            {isAuthenticated ? (
+              <button
+                onClick={() => navigate("/profile")}
+                className="flex items-center justify-center rounded-full hover:ring-2 hover:ring-green-600 hover:ring-offset-2 transition-all focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+                aria-label="Profile"
+              >
+                <Avatar className="h-8 w-8 cursor-pointer">
+                  <AvatarFallback className="bg-green-600 text-white text-xs font-medium">
+                    {authData?.user.email ? authData.user.email.charAt(0).toUpperCase() : "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsAuthDialogOpen(true)}
+                className={`flex items-center justify-center p-1.5 bg-transparent rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 border border-gray-600 ${
+                  scrolled ? "text-primary" : "text-gray-600 hover:text-primary"
+                }`}
+                aria-label="Login"
+              >
+                <User className="w-6 h-6" />
+              </button>
+            )}
+            <Button
+              variant="default"
+              size="sm"
+              className="bg-primary border-1 border-primary px-2"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </Button>
           </div>
 
           {/* Desktop Left Side: Navigation & CTA */}
