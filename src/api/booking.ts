@@ -111,6 +111,8 @@ export interface BookingDetailsResponse {
         user_ID: number;
         hotel_ID: string;
         hotel_name: string;
+        hotel_address?: string;
+        hotel_phone?: string;
         room_ID: string;
         RoomNumber: number;
         booking_Status: string;

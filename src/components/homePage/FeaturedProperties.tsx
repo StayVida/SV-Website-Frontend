@@ -151,6 +151,9 @@ function FeaturedProperties() {
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
+                      <div className="text-sm text-red-500 line-through mb-1 font-medium">
+                        ₹{Math.round(hotel["base price"] * 1.1)}
+                      </div>
                       <span className="text-2xl font-bold">₹{Math.round(hotel["base price"])}</span>
                       <span className="text-gray-600">/night</span>
                     </div>
@@ -202,6 +205,9 @@ function FeaturedProperties() {
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
+                      <div className="text-sm text-red-500 line-through mb-1 font-medium">
+                        ₹{Math.round(hotel["base price"] * 1.1)}<span className="text-gray-600 text-sm">/night</span>
+                      </div>
                       <span className="text-2xl font-bold">₹{Math.round(hotel["base price"])}</span>
                       <span className="text-gray-600">/night</span>
                     </div>

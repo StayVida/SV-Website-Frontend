@@ -36,7 +36,7 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
         {/* Sorting UI can be added here if needed */}
       </div>
       {/* Hotel Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
         {hotels.map((hotel) => (
           <Card key={hotel.id} className="overflow-hidden hover:shadow-lg transition-shadow">
             <div className="relative h-48">
