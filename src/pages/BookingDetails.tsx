@@ -64,7 +64,14 @@ export default function BookingDetails() {
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
+        windowWidth: 1024,
         onclone: (clonedDoc) => {
+          const container = clonedDoc.getElementById("invoice-container");
+          if (container) {
+            container.style.width = "1024px";
+            container.style.maxWidth = "none";
+            container.style.padding = "24px";
+          }
           // Robust cleanup of oklch colors that html2canvas can't parse
           const elements = clonedDoc.getElementsByTagName("*");
           for (let i = 0; i < elements.length; i++) {
@@ -180,7 +187,7 @@ export default function BookingDetails() {
         </Button>
       </div>
 
-      <div ref={bookingRef} className="bg-white p-2">
+      <div ref={bookingRef} id="invoice-container" className="bg-white p-2">
         <div className="grid gap-6">
           {/* Status Card */}
           <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-100">
@@ -210,6 +217,8 @@ export default function BookingDetails() {
                   <p className="text-sm text-gray-500">Property</p>
                   <p className="font-semibold text-lg">{data.hotel_name}</p>
                   <p className="text-sm text-gray-600">ID: {data.hotel_ID}</p>
+                  {data.hotel_address && <p className="text-sm text-gray-600">Address: {data.hotel_address}</p>}
+                  {data.hotel_phone && <p className="text-sm text-gray-600">Phone: {data.hotel_phone}</p>}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
