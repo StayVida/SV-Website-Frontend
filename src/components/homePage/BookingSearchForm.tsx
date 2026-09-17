@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +30,8 @@ const BookingSearchForm = ({ onSearch, variant = "glass" }: BookingSearchFormPro
     children: "0",
   })
 
-  const navigate = useNavigate();
+  const router = useRouter();
+  const navigate = (url: string) => router.push(url);
   const isLight = variant === "light";
 
   const handleSearch = (e: React.FormEvent) => {

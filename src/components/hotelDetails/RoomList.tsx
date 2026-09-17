@@ -10,7 +10,7 @@ interface RoomListProps {
   onRoomSelect: (roomId: string) => void;
 }
 
-const RoomImageSlider = ({ images, name }: { images: string[], name: string }) => {
+const RoomImageSlider = ({ images, altText }: { images: string[], altText: string }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const RoomImageSlider = ({ images, name }: { images: string[], name: string }) =
     return (
       <img
         src="/placeholder.svg"
-        alt={name}
+        alt={altText}
         className="w-full h-full object-cover"
       />
     );
@@ -38,7 +38,7 @@ const RoomImageSlider = ({ images, name }: { images: string[], name: string }) =
         <img
           key={idx}
           src={img || "/placeholder.svg"}
-          alt={`${name} ${idx + 1}`}
+          alt={`${altText} view ${idx + 1}`}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
             idx === currentIndex ? "opacity-100" : "opacity-0"
           }`}
@@ -61,18 +61,26 @@ const RoomImageSlider = ({ images, name }: { images: string[], name: string }) =
 };
 
 export default function RoomList({ hotel, selectedRoom, onRoomSelect }: RoomListProps) {
+  if (!hotel.rooms || hotel.rooms.length === 0) return null;
+
   return (
-    <div className="mb-6 sm:mb-8">
-      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-        Available Rooms
-      </h2>
-      <div className="space-y-4 sm:space-y-6">
+    <div className="mb-8">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Select your room</h2>
+      <div className="space-y-4">
         {hotel.rooms.map((room) => (
-          <Card key={room.id} className="overflow-hidden">
+          <Card
+            key={room.id}
+            className={`overflow-hidden transition-all duration-200 cursor-pointer ${
+              selectedRoom === room.id
+                ? "ring-2 ring-gray-900 shadow-md"
+                : "hover:shadow-md border-gray-200"
+            }`}
+            onClick={() => onRoomSelect(room.id)}
+          >
             <CardContent className="p-0">
               <div className="flex flex-col sm:flex-row">
                 <div className="relative w-full sm:w-64 h-56 sm:h-auto min-h-[200px] flex-shrink-0">
-                  <RoomImageSlider images={room.images} name={room.name} />
+                  <RoomImageSlider images={room.images} altText={`${hotel.name} ${room.name} in ${hotel.destination || 'India'}`} />
                 </div>
                 <div className="flex-1 p-4 sm:p-6 flex flex-col">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 space-y-2 sm:space-y-0">

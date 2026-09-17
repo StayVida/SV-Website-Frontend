@@ -152,11 +152,11 @@ export interface WalletResponse {
 }
 
 export const getUserWallet = async (): Promise<WalletResponse> => {
-    const response = await apiClient.get('/api/profile/wallet');
+    const response = await apiClient.get('/profile/wallet');
     return response.data;
 };
 
 export const cancelBooking = async (bookingId: string): Promise<any> => {
-    const response = await apiClient.post(`/api/profile/${bookingId}/cancel`);
+    const response = await apiClient.post(`/profile/${bookingId}/cancel`);
     return response.data;
 };

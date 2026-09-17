@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -75,7 +75,7 @@ export default function BookingSidebar({
   children
 }: BookingSidebarProps) {
   const { authData } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [guestName, setGuestName] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState<string>(hotel.onArrivalPayment ? "Local" : "Online");
@@ -111,7 +111,12 @@ export default function BookingSidebar({
   const handleModifySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsModifyOpen(false);
-    navigate(`/hotel/${hotel.id}/${modifyData.checkIn}/${modifyData.checkOut}/${modifyData.adults}/${modifyData.children}`);
+    
+    // Construct SEO friendly slug
+    const propType = (hotel.type || "hotels").toLowerCase() + "s";
+    const slug = (hotel.name || "hotel").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    
+    router.push(`/${propType}/${hotel.id}_${slug}?checkIn=${encodeURIComponent(modifyData.checkIn)}&checkOut=${encodeURIComponent(modifyData.checkOut)}&adults=${encodeURIComponent(modifyData.adults)}&children=${encodeURIComponent(modifyData.children)}`);
   };
 
   const selectedRoomData = hotel.rooms.find((r: any) => r.id === selectedRoom);
@@ -230,7 +235,7 @@ export default function BookingSidebar({
       if (paymentMethod === "Local") {
         setBookingSuccess(true);
         setTimeout(() => {
-          navigate(`/booking/${bookingResponse.bookingId}`);
+          router.push(`/booking/${bookingResponse.bookingId}`);
         }, 1500);
         return;
       }
@@ -246,7 +251,7 @@ export default function BookingSidebar({
       });
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_API_KEY,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
         amount: orderResponse.amount,
         currency: orderResponse.currency,
         name: hotel.name,
@@ -261,7 +266,7 @@ export default function BookingSidebar({
 
           setBookingSuccess(true);
           setTimeout(() => {
-            navigate(`/booking/${bookingResponse.bookingId}`);
+            router.push(`/booking/${bookingResponse.bookingId}`);
           }, 1500);
         },
         prefill: {
@@ -480,6 +485,7 @@ export default function BookingSidebar({
                   type="button"
                   onClick={() => setShowPromoInput(true)}
                   className="text-sm font-medium text-primary hover:underline flex items-center bg-transparent"
+                  suppressHydrationWarning
                 >
                   Apply code
                 </button>
@@ -567,6 +573,7 @@ export default function BookingSidebar({
               <button
                 type="button"
                 onClick={() => setPaymentMethod("Online")}
+                suppressHydrationWarning
                 className={cn(
                   "flex flex-col items-center justify-between rounded-md border-2 p-4 transition-all w-full",
                   paymentMethod === "Online"

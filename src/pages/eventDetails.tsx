@@ -1,4 +1,6 @@
-import { useParams } from "react-router-dom";
+"use client";
+
+import { useParams, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import eventData from "@/data.json";
 import ImageGallery from "@/components/eventDetails/ImageGallery";
@@ -27,7 +29,14 @@ interface Event {
 }
 
 function EventDetails() {
-  const { id, checkIn, checkOut, persons, eventType } = useParams();
+  const params = useParams();
+  const searchParams = useSearchParams();
+  
+  const id = params?.id as string | undefined;
+  const checkIn = params?.checkIn as string | undefined || searchParams?.get("checkIn") || undefined;
+  const checkOut = params?.checkOut as string | undefined || searchParams?.get("checkOut") || undefined;
+  const persons = params?.persons as string | undefined || searchParams?.get("persons") || undefined;
+  const eventType = params?.eventType as string | undefined || searchParams?.get("eventType") || undefined;
   const [event, setEvent] = useState<Event | null>(null);
   const [notFound, setNotFound] = useState(false);
 

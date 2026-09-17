@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin, Users } from "lucide-react";
 import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Amenity {
   name: string;
@@ -31,13 +31,13 @@ interface EventResultsProps {
 }
 
 const EventResults: React.FC<EventResultsProps> = ({ events }) => {
-  const navigate = useNavigate();
-  const params = useParams();
-  const checkIn = params.checkIn || "";
-  const checkOut = params.checkOut || "";
-  const adults = params.adults || "2";
-  const children = params.children || "0";
-  const eventType = params.eventType || "";
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const checkIn = searchParams?.get('checkIn') || "";
+  const checkOut = searchParams?.get('checkOut') || "";
+  const adults = searchParams?.get('adults') || "2";
+  const children = searchParams?.get('children') || "0";
+  const eventType = searchParams?.get('eventType') || "";
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -142,7 +142,7 @@ const EventResults: React.FC<EventResultsProps> = ({ events }) => {
                 </div>
                 <Button 
                   className="bg-green-600 hover:bg-green-700 text-white" 
-                  onClick={() => navigate(`/event/${event.id}/${encodeURIComponent(checkIn)}/${encodeURIComponent(checkOut)}/${adults}/${children || '0'}/${encodeURIComponent(eventType || '')}`)}
+                  onClick={() => router.push(`/event/${event.id}/${encodeURIComponent(checkIn as string)}/${encodeURIComponent(checkOut as string)}/${adults}/${children || '0'}/${encodeURIComponent(eventType as string || '')}`)}
                 >
                   View Details
                 </Button>

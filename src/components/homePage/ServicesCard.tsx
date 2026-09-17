@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Building, CalendarIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const ServicesCard = () => {
 
@@ -21,8 +21,7 @@ const ServicesCard = () => {
             <p className="text-sm lg:text-base text-gray-600">
               Find and book the perfect stay from our curated collection of hotels.
             </p>
-            <Link
-              to="/hotels"
+            <Link href="/hotels"
               className="text-green-600 hover:text-green-700 font-medium text-sm lg:text-base"
             >
               Learn More →
@@ -43,8 +42,7 @@ const ServicesCard = () => {
               Door-to-door transportation service for seamless travel experience.
             </p>
             <p className="text-sm text-gray-600 lg:hidden">Hassle Free</p>
-            <Link
-              to="#"
+            <Link href="#"
               className="text-green-600 hover:text-green-700 font-medium text-sm lg:text-base hidden lg:inline"
             >
               Learn More →
@@ -62,7 +60,7 @@ const ServicesCard = () => {
               End-to-end event planning and execution services for any occasion.
             </p>
             <Link 
-              to="/events" 
+              href="/events" 
               className="text-green-600 hover:text-green-700 font-medium text-sm lg:text-base"
             >
               Learn More →

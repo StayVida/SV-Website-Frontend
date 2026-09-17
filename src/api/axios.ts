@@ -83,10 +83,9 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('authData');
       localStorage.removeItem('user');
       
-      // Redirect to login if not a login request and not already on login page
-      const isLoginRequest = error.config?.url?.includes('/login') || error.config?.url?.includes('/otplogin');
-      if (!isLoginRequest && window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      // Dispatch a custom event for the UI to catch and show the login dialog
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'));
       }
     } else if (error.response?.status === 403) {
       console.error('Forbidden - Insufficient permissions');

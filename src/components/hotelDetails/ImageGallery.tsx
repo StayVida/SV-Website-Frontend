@@ -10,7 +10,7 @@ export default function ImageGallery({ hotel }: ImageGalleryProps) {
       <div className="relative h-64 md:h-96 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-[1.01]">
         <img
           src={hotel.images[0] || "/placeholder.svg"}
-          alt={hotel.name}
+          alt={`${hotel.name} ${hotel.type ? hotel.type.toLowerCase() : 'property'} exterior in ${hotel.destination || 'India'}`}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

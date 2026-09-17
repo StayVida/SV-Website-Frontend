@@ -85,7 +85,7 @@ export const PreviousBookings = ({
       });
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_API_KEY,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
         amount: orderResponse.amount,
         currency: orderResponse.currency,
         name: booking.hotelName,

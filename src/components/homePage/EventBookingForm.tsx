@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +29,7 @@ const eventTypes = [
 ];
 
 const EventBookingForm = ({ onSearch, variant = "glass" }: EventBookingFormProps) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     eventType: "",
     destination: "",
@@ -112,7 +112,7 @@ const EventBookingForm = ({ onSearch, variant = "glass" }: EventBookingFormProps
         eventType: formData.eventType,
       });
       
-      navigate(`/events/search?${queryParams.toString()}`);
+      router.push(`/events/search?${queryParams.toString()}`);
     }
   };
 
