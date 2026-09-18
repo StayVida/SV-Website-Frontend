@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react"
+import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MapPin, Star } from "lucide-react"
-import { API_BASE_URI, API_ENDPOINTS } from "@/config/api"
+import apiClient from "@/api/axios"
+import { API_ENDPOINTS } from "@/config/api"
 
 interface Hotel {
   id: string;
@@ -25,48 +26,16 @@ interface ApiResponse {
 }
 
 function FeaturedProperties() {
-  const [featuredProperties, setFeaturedProperties] = useState<Hotel[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchFeaturedHotels = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(`${API_BASE_URI}${API_ENDPOINTS.FEATURED_HOTELS}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.NEXT_PUBLIC_X_API_KEY || "",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch featured hotels");
-        }
-
-        const result: ApiResponse = await response.json();
-
-        // Ensure result.data is an array before setting state
-        const data = Array.isArray(result?.data) ? result.data : [];
-
-        if (result.status === 200) {
-          setFeaturedProperties(data);
-        } else {
-          throw new Error(result.message || "Failed to fetch featured hotels");
-        }
-      } catch (err: any) {
-        setError(err.message || "An error occurred while fetching featured hotels");
-        console.error("Error fetching featured hotels:", err);
-      } finally {
-        setIsLoading(false);
+  const { data: featuredProperties = [], isLoading, error } = useQuery<Hotel[], Error>({
+    queryKey: ['featuredHotels'],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse>(API_ENDPOINTS.FEATURED_HOTELS);
+      if (response.data.status === 200) {
+        return Array.isArray(response.data.data) ? response.data.data : [];
       }
-    };
-
-    fetchFeaturedHotels();
-  }, []);
+      throw new Error(response.data.message || "Failed to fetch featured hotels");
+    }
+  });
 
   const getStarRating = (rating: number) => {
     const fullStars = Math.floor(rating);

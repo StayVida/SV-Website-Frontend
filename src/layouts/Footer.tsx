@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { Building, Instagram, MessageCircle, Facebook } from "lucide-react"
 import Link from "next/link"
 
@@ -20,7 +21,7 @@ async function getFeaturedProperties() {
   return [];
 }
 
-export default async function Footer() {
+async function FooterDirectory() {
   const properties = await getFeaturedProperties();
 
   // Group properties by type
@@ -35,61 +36,71 @@ export default async function Footer() {
     return `/${fallbackType}/${id}_${slugName}`;
   };
 
+  if (properties.length === 0) return null;
+
+  return (
+    <div className="mb-12 border-b border-green-800 pb-12">
+      <h2 className="text-2xl font-bold mb-8 text-white">Explore StayVida</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div>
+          <h3 className="text-lg font-semibold text-green-300 mb-4">Hotels</h3>
+          <ul className="space-y-3">
+            {hotels.slice(0, 8).map((hotel: any) => (
+              <li key={hotel.id || hotel.hotelId}>
+                <Link href={generateSlug(hotel, 'hotels')} className="text-sm text-green-100 hover:text-white transition-colors">
+                  {hotel.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-green-300 mb-4">Resorts</h3>
+          <ul className="space-y-3">
+            {resorts.slice(0, 8).map((resort: any) => (
+              <li key={resort.id || resort.hotelId}>
+                <Link href={generateSlug(resort, 'resorts')} className="text-sm text-green-100 hover:text-white transition-colors">
+                  {resort.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-green-300 mb-4">Villas</h3>
+          <ul className="space-y-3">
+            {villas.slice(0, 8).map((villa: any) => (
+              <li key={villa.id || villa.hotelId}>
+                <Link href={generateSlug(villa, 'villas')} className="text-sm text-green-100 hover:text-white transition-colors">
+                  {villa.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-green-300 mb-4">Mahabaleshwar Guide</h3>
+          <ul className="space-y-3">
+            <li><Link href="/blog/places-to-visit" className="text-sm text-green-100 hover:text-white transition-colors">Places to Visit</Link></li>
+            <li><Link href="/blog/things-to-do" className="text-sm text-green-100 hover:text-white transition-colors">Things to Do</Link></li>
+            <li><Link href="/blog/best-time-to-visit" className="text-sm text-green-100 hover:text-white transition-colors">Best Time to Visit</Link></li>
+            <li><Link href="/blog/travel-guide" className="text-sm text-green-100 hover:text-white transition-colors">Travel Guide</Link></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Footer() {
   return (
     <footer className="bg-green-900 text-white py-8 lg:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* SEO Directory Section for Internal Linking */}
-        {/* <div className="mb-12 border-b border-green-800 pb-12">
-          <h2 className="text-2xl font-bold mb-8 text-white">Explore StayVida</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold text-green-300 mb-4">Hotels</h3>
-              <ul className="space-y-3">
-                {hotels.slice(0, 8).map((hotel: any) => (
-                  <li key={hotel.id || hotel.hotelId}>
-                    <Link href={generateSlug(hotel, 'hotels')} className="text-sm text-green-100 hover:text-white transition-colors">
-                      {hotel.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-green-300 mb-4">Resorts</h3>
-              <ul className="space-y-3">
-                {resorts.slice(0, 8).map((resort: any) => (
-                  <li key={resort.id || resort.hotelId}>
-                    <Link href={generateSlug(resort, 'resorts')} className="text-sm text-green-100 hover:text-white transition-colors">
-                      {resort.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-green-300 mb-4">Villas</h3>
-              <ul className="space-y-3">
-                {villas.slice(0, 8).map((villa: any) => (
-                  <li key={villa.id || villa.hotelId}>
-                    <Link href={generateSlug(villa, 'villas')} className="text-sm text-green-100 hover:text-white transition-colors">
-                      {villa.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-green-300 mb-4">Mahabaleshwar Guide</h3>
-              <ul className="space-y-3">
-                <li><Link href="/blog/places-to-visit" className="text-sm text-green-100 hover:text-white transition-colors">Places to Visit</Link></li>
-                <li><Link href="/blog/things-to-do" className="text-sm text-green-100 hover:text-white transition-colors">Things to Do</Link></li>
-                <li><Link href="/blog/best-time-to-visit" className="text-sm text-green-100 hover:text-white transition-colors">Best Time to Visit</Link></li>
-                <li><Link href="/blog/travel-guide" className="text-sm text-green-100 hover:text-white transition-colors">Travel Guide</Link></li>
-              </ul>
-            </div>
-          </div>
-        </div> */}
+        {/* SEO Directory Section for Internal Linking streamed via Suspense */}
+        {/* <Suspense fallback={<div className="mb-12 border-b border-green-800 pb-12"><div className="h-6 w-48 bg-green-800 animate-pulse rounded mb-8"></div><div className="grid grid-cols-2 md:grid-cols-4 gap-8">{[1, 2, 3, 4].map(i => <div key={i}><div className="h-5 w-24 bg-green-800 animate-pulse rounded mb-4"></div><div className="space-y-3">{[1, 2, 3, 4].map(j => <div key={j} className="h-4 w-32 bg-green-800/50 animate-pulse rounded"></div>)}</div></div>)}</div></div>}>
+          <FooterDirectory />
+        </Suspense> */}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
