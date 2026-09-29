@@ -10,7 +10,19 @@ import {
   type ImagePreview,
 } from "./types";
 import { MultiSelectField } from "./MultiSelectField";
-import { LocationPicker } from "./LocationPicker";
+import dynamic from "next/dynamic";
+
+const LocationPicker = dynamic(
+  () => import("./LocationPicker").then((mod) => mod.LocationPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[360px] w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center text-gray-400 text-sm">
+        Loading map...
+      </div>
+    ),
+  }
+);
 
 const countryCodes = [
   { code: "+91", label: "India (+91)" },

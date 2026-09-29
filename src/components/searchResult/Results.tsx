@@ -79,6 +79,9 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
               </div>
               <div className="flex items-center justify-between">
                 <div>
+                  <div className="text-xs text-red-500 line-through font-medium">
+                    ₹{Math.round((hotel.pricePerNight || 0) * 1.1).toLocaleString()}
+                  </div>
                   <span className="text-2xl font-bold">₹{hotel.pricePerNight?.toLocaleString()}</span>
                   <span className="text-gray-600 text-sm">/night</span>
                 </div>
