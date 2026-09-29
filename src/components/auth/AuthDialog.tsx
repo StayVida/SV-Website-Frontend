@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { API_BASE_URI, API_ENDPOINTS } from "@/config/api";
+import { API_ENDPOINTS } from "@/config/api";
+import { useMutation } from "@tanstack/react-query";
+import apiClient from "@/api/axios";
 
 interface AuthDialogProps {
   open: boolean;
@@ -19,7 +21,6 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -57,7 +58,6 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     setEmail("");
     setOtp("");
     setIsOtpSent(false);
-    setIsLoading(false);
     setError(null);
     setStatusMessage(null);
     clearResendTimer();
@@ -75,99 +75,62 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     };
   }, [clearResendTimer]);
 
-  const requestOtp = useCallback(
-    async (emailAddress: string) => {
-      setIsLoading(true);
+  const requestOtpMutation = useMutation({
+    mutationFn: async (emailAddress: string) => {
+      const response = await apiClient.post(API_ENDPOINTS.GET_OTP, { email: emailAddress });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setIsOtpSent(true);
+      setStatusMessage(data.message || "OTP sent to your email. Please check your inbox.");
+      setOtp("");
+      startResendTimer();
       setError(null);
+    },
+    onError: (err: any) => {
+      setError(err.response?.data?.message || err.response?.data?.error || err.message || "Failed to send OTP. Please try again.");
+    }
+  });
 
-      try {
-        const response = await fetch(`${API_BASE_URI}${API_ENDPOINTS.GET_OTP}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": import.meta.env.VITE_X_API_KEY,
+  const requestOtp = useCallback((emailAddress: string) => {
+    requestOtpMutation.mutate(emailAddress);
+  }, [requestOtpMutation]);
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: async (data: { emailAddress: string, otpCode: string }) => {
+      const response = await apiClient.post(API_ENDPOINTS.VERIFY_OTP, {
+        email: data.emailAddress,
+        otp: data.otpCode,
+      });
+      return response.data;
+    },
+    onSuccess: (responseData, variables) => {
+      if (responseData.success && responseData.token) {
+        login({
+          token: responseData.token,
+          user: {
+            email: responseData.email ?? variables.emailAddress,
+            role: responseData.role ?? "user",
+            userID: responseData.userID ?? 0,
           },
-          body: JSON.stringify({ email: emailAddress }),
         });
 
-        const responseText = await response.text();
-        let responseData: any;
-        try {
-          responseData = JSON.parse(responseText);
-        } catch {
-          responseData = { message: responseText };
-        }
-
-        if (!response.ok) {
-          throw new Error(responseData.message || responseData.error || "Failed to send OTP");
-        }
-
-        setIsOtpSent(true);
-        setStatusMessage(responseData.message || "OTP sent to your email. Please check your inbox.");
-        setOtp("");
-        startResendTimer();
-      } catch (err: any) {
-        setError(err?.message || "Failed to send OTP. Please try again.");
-      } finally {
-        setIsLoading(false);
+        resetState();
+        onOpenChange(false);
+      } else {
+        setError(responseData.message || "Authentication failed");
       }
     },
-    [startResendTimer]
-  );
+    onError: (err: any) => {
+      setError(err.response?.data?.message || err.response?.data?.error || err.message || "Invalid OTP. Please try again.");
+    }
+  });
 
-  const verifyOtp = useCallback(
-    async (emailAddress: string, otpCode: string) => {
-      setIsLoading(true);
-      setError(null);
+  const verifyOtp = useCallback((emailAddress: string, otpCode: string) => {
+    verifyOtpMutation.mutate({ emailAddress, otpCode });
+  }, [verifyOtpMutation]);
 
-      try {
-        const response = await fetch(`${API_BASE_URI}${API_ENDPOINTS.VERIFY_OTP}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": import.meta.env.VITE_X_API_KEY,
-          },
-          body: JSON.stringify({
-            email: emailAddress,
-            otp: otpCode,
-          }),
-        });
-
-        const responseText = await response.text();
-        let responseData: any;
-        try {
-          responseData = JSON.parse(responseText);
-        } catch {
-          responseData = { message: responseText };
-        }
-
-        if (!response.ok) {
-          throw new Error(responseData.message || responseData.error || "Invalid OTP");
-        }
-
-        if (responseData.success && responseData.token) {
-          login({
-            token: responseData.token,
-            user: {
-              email: responseData.email ?? emailAddress,
-              role: responseData.role ?? "user",
-              userID: responseData.userID ?? 0,
-            },
-          });
-
-          resetState();
-          onOpenChange(false);
-        } else {
-          throw new Error(responseData.message || "Authentication failed");
-        }
-      } catch (err: any) {
-        setError(err?.message || "Invalid OTP. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [login, onOpenChange, resetState]
-  );
+  const isLoading = requestOtpMutation.isPending || verifyOtpMutation.isPending;
 
   const handleSendOtp = async (event: React.FormEvent) => {
     event.preventDefault();

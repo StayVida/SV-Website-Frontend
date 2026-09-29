@@ -2,11 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 export default function ProfileDropdown() {
   const { authData, logout } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ export default function ProfileDropdown() {
   }, [isOpen]);
 
   const handleProfileClick = () => {
-    navigate("/profile");
+    router.push("/profile");
     setIsOpen(false);
   };
 

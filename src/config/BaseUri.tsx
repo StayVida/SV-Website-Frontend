@@ -4,11 +4,11 @@
  */
 
 const getBaseUrl = (): string => {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   
   if (!baseUrl) {
     console.error(
-      "VITE_BASE_URL environment variable is not set. Please check your .env file."
+      "NEXT_PUBLIC_BASE_URL environment variable is not set. Please check your .env file."
     );
     return "https://api.stayvida.in"; // Fallback to avoid crash
   }
@@ -17,7 +17,7 @@ const getBaseUrl = (): string => {
     new URL(baseUrl);
   } catch {
     console.error(
-      `Invalid VITE_BASE_URL format: "${baseUrl}". Please provide a valid URL (e.g., https://api.example.com)`
+      `Invalid NEXT_PUBLIC_BASE_URL format: "${baseUrl}". Please provide a valid URL (e.g., https://api.example.com)`
     );
     return "https://api.stayvida.in"; // Fallback
   }

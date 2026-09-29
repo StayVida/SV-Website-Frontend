@@ -1,8 +1,10 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin } from "lucide-react";
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useRouter, useParams } from "next/navigation";
 
 interface Amenity {
   name: string;
@@ -26,8 +28,9 @@ interface ResultsProps {
 }
 
 const Results: React.FC<ResultsProps> = ({ hotels }) => {
-  const navigate = useNavigate();
-  const { checkIn, checkOut, adults, children } = useParams();
+  const router = useRouter();
+  const params = useParams() as { checkIn?: string, checkOut?: string, adults?: string, children?: string };
+  const { checkIn, checkOut, adults, children } = params || {};
   return (
     <div className="flex-1 h-full overflow-y-auto">
       {/* Results Header */}
@@ -42,7 +45,7 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
             <div className="relative h-48">
               <img
                 src={hotel.images && hotel.images[0] ? hotel.images[0] : "/placeholder.svg"}
-                alt={hotel.name}
+                alt={`${hotel.name} ${hotel.type ? hotel.type.toLowerCase() : 'property'} in ${hotel.destination || 'India'}`}
                 className="object-cover w-full h-full"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "/placeholder.svg";
@@ -79,7 +82,11 @@ const Results: React.FC<ResultsProps> = ({ hotels }) => {
                   <span className="text-2xl font-bold">₹{hotel.pricePerNight?.toLocaleString()}</span>
                   <span className="text-gray-600 text-sm">/night</span>
                 </div>
-                <Button className="bg-primary hover:bg-primary/80 text-white" onClick={() => navigate(`/hotel/${hotel.id}/${checkIn}/${checkOut}/${adults}/${children}`)}>View Details</Button>
+                <Button className="bg-primary hover:bg-primary/80 text-white" onClick={() => {
+                  const propType = (hotel.type || "hotels").toLowerCase() + "s";
+                  const slug = (hotel.name || "hotel").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                  router.push(`/${propType}/${hotel.id}_${slug}?checkIn=${encodeURIComponent(checkIn || "")}&checkOut=${encodeURIComponent(checkOut || "")}&adults=${encodeURIComponent(adults || "")}&children=${encodeURIComponent(children || "")}`);
+                }}>View Details</Button>
               </div>
             </CardContent>
           </Card>

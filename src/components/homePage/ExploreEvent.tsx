@@ -20,7 +20,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src={weddingImg}
+                src={weddingImg.src}
                 alt="Weddings"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
               />
@@ -35,7 +35,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src={birthdayImg}
+                src={birthdayImg.src}
                 alt="Birthdays"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110 "
               />
@@ -50,7 +50,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src={corporateImg}
+                src={corporateImg.src}
                 alt="Corporate Events"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
               />
@@ -65,7 +65,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src={privateImg}
+                src={privateImg.src}
                 alt="Private Parties"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
               />
@@ -80,7 +80,7 @@ function ExploreEvent() {
           <Card className="relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
             <div className="relative h-48">
               <img
-                src={engagementImg}
+                src={engagementImg.src}
                 alt="Engagements"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
               />

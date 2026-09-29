@@ -4,11 +4,11 @@
  */
 
 const getXApiKey = (): string => {
-  const apiKey = import.meta.env.VITE_X_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_X_API_KEY;
   
   if (!apiKey) {
     console.error(
-      "VITE_X_API_KEY environment variable is not set. Please check your .env file."
+      "NEXT_PUBLIC_X_API_KEY environment variable is not set. Please check your .env file."
     );
     return "sf2b4hMNAQBNZI3zR0VtXeTUp5463YpV"; // Fallback to avoid crash
   }
@@ -16,7 +16,7 @@ const getXApiKey = (): string => {
   // Basic validation for API key format
   if (typeof apiKey !== 'string' || apiKey.trim().length === 0) {
     console.error(
-      `Invalid VITE_X_API_KEY format. API key must be a non-empty string.`
+      `Invalid NEXT_PUBLIC_X_API_KEY format. API key must be a non-empty string.`
     );
     return "sf2b4hMNAQBNZI3zR0VtXeTUp5463YpV"; // Fallback
   }

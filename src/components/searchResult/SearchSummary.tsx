@@ -3,7 +3,7 @@ import { Calendar, Users, Baby } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useNavigate } from "react-router-dom"
+import { useRouter } from "next/navigation"
 import {
   Dialog,
   DialogContent,
@@ -62,7 +62,7 @@ const parseToISODate = (dateStr: string) => {
 }
 
 function SearchSummary({ searchData }: { searchData: SearchData }) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     destination: searchData.destination,
@@ -87,7 +87,7 @@ function SearchSummary({ searchData }: { searchData: SearchData }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsOpen(false);
-    navigate(`/search/${formData.destination}/${formData.checkIn}/${formData.checkOut}/${formData.adults}/${formData.children}`);
+    router.push(`/search/${formData.destination}/${formData.checkIn}/${formData.checkOut}/${formData.adults}/${formData.children}`);
   };
 
   return (
