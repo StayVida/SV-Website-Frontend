@@ -460,9 +460,14 @@ export default function BookingSidebar({
 
           {/* Price Breakdown */}
           <div className="space-y-3 mb-6">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span className="text-gray-700">Price per night</span>
-              <span className="font-medium">₹{basePricePerNight.toLocaleString()}</span>
+              <div className="text-right">
+                <span className="text-xs text-red-500 line-through mr-2 font-medium">
+                  ₹{Math.round(basePricePerNight * 1.1).toLocaleString()}
+                </span>
+                <span className="font-medium text-gray-900">₹{basePricePerNight.toLocaleString()}</span>
+              </div>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-700">Taxes</span>

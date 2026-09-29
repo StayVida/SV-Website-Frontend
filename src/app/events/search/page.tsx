@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import EventSearchSummary from "@/components/searchResult/EventSearchSummary";
 import EventFilterSidebar from "@/components/searchResult/EventFilterSidebar";
@@ -55,7 +55,7 @@ interface Event {
   hotelId: number;
 }
 
-function SearchResultForEvent() {
+function SearchResultForEventContent() {
   const params = useParams() as Record<string, string>;
   const searchParams = useSearchParams();
   const [searchData, setSearchData] = useState<SearchData>({
@@ -66,8 +66,6 @@ function SearchResultForEvent() {
     children: "",
     eventType: "",
   });
-
-
 
   const eventTypeDisplay = searchData.eventType || "Event";
   const destinationDisplay = searchData.destination || "India";
@@ -260,4 +258,10 @@ function SearchResultForEvent() {
   );
 }
 
-export default SearchResultForEvent;
+export default function SearchResultForEvent() {
+  return (
+    <Suspense fallback={<ResultsSkeleton count={6} />}>
+      <SearchResultForEventContent />
+    </Suspense>
+  );
+}

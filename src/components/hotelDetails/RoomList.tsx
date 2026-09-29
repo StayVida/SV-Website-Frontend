@@ -103,11 +103,16 @@ export default function RoomList({ hotel, selectedRoom, onRoomSelect }: RoomList
                     ))}
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 mt-auto pt-4">
-                    <div className="flex items-baseline">
-                      <span className="text-xl sm:text-2xl font-bold text-green-600">
-                        ₹{room.price.toLocaleString()}
-                      </span>
-                      <span className="text-sm sm:text-base text-gray-600 ml-1">/night</span>
+                    <div>
+                      <div className="text-xs sm:text-sm text-red-500 line-through font-medium">
+                        ₹{Math.round(room.price * 1.1).toLocaleString()}
+                      </div>
+                      <div className="flex items-baseline">
+                        <span className="text-xl sm:text-2xl font-bold text-green-600">
+                          ₹{room.price.toLocaleString()}
+                        </span>
+                        <span className="text-sm sm:text-base text-gray-600 ml-1">/night</span>
+                      </div>
                     </div>
                     {selectedRoom === room.id ? (
                       <Button 
