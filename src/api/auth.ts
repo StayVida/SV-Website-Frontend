@@ -99,21 +99,76 @@ export const requestOtp = async (email: string): Promise<void> => {
  */
 export const sendDeviceInfo = async (email: string): Promise<void> => {
   try {
+    const userAgentData = (navigator as any).userAgentData;
+
+    let deviceModel = "Unknown";
+    let platform = "Unknown";
+    let platformVersion = "Unknown";
+    let architecture = "Unknown";
+    let bitness = "Unknown";
+    let browser = "Unknown";
+
+    if (userAgentData?.getHighEntropyValues) {
+
+      const data = await userAgentData.getHighEntropyValues([
+        "model",
+        "platform",
+        "platformVersion",
+        "architecture",
+        "bitness",
+        "fullVersionList"
+      ]);
+
+      deviceModel = data.model || "Unknown";
+      platform = data.platform || "Unknown";
+      platformVersion = data.platformVersion || "Unknown";
+      architecture = data.architecture || "Unknown";
+      bitness = data.bitness || "Unknown";
+
+      if (data.fullVersionList?.length) {
+        browser = data.fullVersionList
+          .map((item: any) => `${item.brand} ${item.version}`)
+          .join(", ");
+      }
+    }
+
     const deviceInfo = {
-      email: email,
+      email,
+
+      deviceModel,
+      platform,
+      platformVersion,
+      architecture,
+      bitness,
+      browser,
+
+      // Keep these for comparison/debugging
       userAgent: navigator.userAgent,
-      platform: navigator.platform,
       language: navigator.language,
+
       screenWidth: window.screen.width,
       screenHeight: window.screen.height,
+      devicePixelRatio: window.devicePixelRatio,
     };
 
-    await apiClient.post('/api/device/device-info', deviceInfo);
+    console.log("========== DEVICE INFO ==========");
+    console.log("Device Model :", deviceModel);
+    console.log("Platform     :", platform);
+    console.log("OS Version   :", platformVersion);
+    console.log("Architecture :", architecture);
+    console.log("Bitness      :", bitness);
+    console.log("Browser      :", browser);
+    console.log("Screen       :", `${window.screen.width}x${window.screen.height}`);
+    console.log("User-Agent   :", navigator.userAgent);
+    console.log("=================================");
+
+    await apiClient.post(
+      '/api/device/device-info',
+      deviceInfo
+    );
 
   } catch (error) {
-    // Device info is only for logging.
-    // Do not interrupt the login/OTP process if this fails.
-    console.error('Device info request error:', error);
+    console.error("Device info request error:", error);
   }
 };
 
