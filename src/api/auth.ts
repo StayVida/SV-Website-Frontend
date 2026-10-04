@@ -92,6 +92,31 @@ export const requestOtp = async (email: string): Promise<void> => {
   }
 };
 
+
+
+/**
+ * Send device information to backend for logging
+ */
+export const sendDeviceInfo = async (email: string): Promise<void> => {
+  try {
+    const deviceInfo = {
+      email: email,
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language,
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+    };
+
+    await apiClient.post('/api/device/device-info', deviceInfo);
+
+  } catch (error) {
+    // Device info is only for logging.
+    // Do not interrupt the login/OTP process if this fails.
+    console.error('Device info request error:', error);
+  }
+};
+
 /**
  * Verify OTP and complete login
  * Hits /otplogin/verify-otp with email, empty username, and OTP

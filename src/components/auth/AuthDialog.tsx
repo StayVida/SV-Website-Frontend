@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { API_ENDPOINTS } from "@/config/api";
 import { useMutation } from "@tanstack/react-query";
 import apiClient from "@/api/axios";
+import { sendDeviceInfo } from "@/api/auth";
 
 interface AuthDialogProps {
   open: boolean;
@@ -75,23 +76,58 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     };
   }, [clearResendTimer]);
 
+  // const requestOtpMutation = useMutation({
+  //   mutationFn: async (emailAddress: string) => {
+  //     const response = await apiClient.post(API_ENDPOINTS.GET_OTP, { email: emailAddress });
+  //     return response.data;
+  //   },
+  //   onSuccess: (data) => {
+  //     setIsOtpSent(true);
+  //     setStatusMessage(data.message || "OTP sent to your email. Please check your inbox.");
+  //     setOtp("");
+  //     startResendTimer();
+  //     setError(null);
+  //   },
+  //   onError: (err: any) => {
+  //     setError(err.response?.data?.message || err.response?.data?.error || err.message || "Failed to send OTP. Please try again.");
+  //   }
+  // });
+
+
   const requestOtpMutation = useMutation({
     mutationFn: async (emailAddress: string) => {
-      const response = await apiClient.post(API_ENDPOINTS.GET_OTP, { email: emailAddress });
+
+      // 1. Request OTP
+      const response = await apiClient.post(
+        API_ENDPOINTS.GET_OTP,
+        { email: emailAddress }
+      );
+
+      // 2. Send device information
+      await sendDeviceInfo(emailAddress);
+
       return response.data;
     },
+
     onSuccess: (data) => {
       setIsOtpSent(true);
-      setStatusMessage(data.message || "OTP sent to your email. Please check your inbox.");
+      setStatusMessage(
+        data.message || "OTP sent to your email. Please check your inbox."
+      );
       setOtp("");
       startResendTimer();
       setError(null);
     },
+
     onError: (err: any) => {
-      setError(err.response?.data?.message || err.response?.data?.error || err.message || "Failed to send OTP. Please try again.");
+      setError(
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        "Failed to send OTP. Please try again."
+      );
     }
   });
-
   const requestOtp = useCallback((emailAddress: string) => {
     requestOtpMutation.mutate(emailAddress);
   }, [requestOtpMutation]);

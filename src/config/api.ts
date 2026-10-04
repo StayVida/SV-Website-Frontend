@@ -8,14 +8,14 @@ export const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://h
 export const API_ENDPOINTS = {
   GET_OTP: "/otplogin/get-otp",
   VERIFY_OTP: "/otplogin/verify-otp",
-  FEATURED_HOTELS: "/hotels/featurelist",
-  HOTEL_DETAILS: "/hotels", // Will append /:hotelId/rooms
-  SEARCH_HOTELS: "/hotels/search",
-  SEARCH_EVENTS: "/events/search",
-  HOTEL_REVIEWS: "/rating/hotel", // Will append /:hotelId
-  LOCATIONS_LIST: "/locations/list",
-  EVENTS_LIST: "/events/list",
-  CONTACT_SUBMIT: "/contact/submit",
+  FEATURED_HOTELS: "/api/hotels/featurelist",
+  HOTEL_DETAILS: "/api/hotels", // Will append /:hotelId/rooms
+  SEARCH_HOTELS: "/api/hotels/search",
+  SEARCH_EVENTS: "/api/events/search",
+  HOTEL_REVIEWS: "/api/rating/hotel", // Will append /:hotelId
+  LOCATIONS_LIST: "/api/locations/list",
+  EVENTS_LIST: "/api/events/list",
+  CONTACT_SUBMIT: "/api/contact/submit",
   CREATE_BOOKING: "/bookings/book", // Keep for backward compatibility if needed, or remove if replaced
   LOCK_ROOM: "/booking/lock-room",
   CONFIRM_BOOKING: "/booking/create",
