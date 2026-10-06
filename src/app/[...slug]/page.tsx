@@ -11,7 +11,8 @@ type Props = {
 
 async function getHotelData(id: string) {
   try {
-    const API_BASE = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000/api";
+    const rawBase = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000/api";
+    const API_BASE = rawBase.endsWith("/api") ? rawBase : `${rawBase.replace(/\/+$/, "")}/api`;
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
